@@ -9,6 +9,7 @@ import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
+        //TKT ON S4EN BALEK DE CA PAREIL POUR LA CLASSE BOUCLES
         /*int[] array1 = {1,2,3,4,5,6,7,8,9,10,11,12};
 
         Scanner input = new Scanner(System.in);
@@ -53,6 +54,10 @@ public class Main {
             System.exit(0);
         }
         */
+
+
+
+
         MyFrame frame = new MyFrame();
         frame.setVisible(true);
     }
