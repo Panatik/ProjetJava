@@ -26,6 +26,7 @@ public class Main {
 
 
         Boucles.fizzBuzz();
+        */
 
         String BDD = "bd_java";
         String login  = "root";
@@ -35,6 +36,7 @@ public class Main {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(url, login, "");
             System.out.println("connected");
+            /*
 
             // Requête
             Statement statement = connection.createStatement();
@@ -48,12 +50,13 @@ public class Main {
             //PreparedStatement
             PreparedStatement pstmt = connection.prepareStatement("SELECT * FROM user " + "WERE id_user = ? AND nombre1 = ?");
             pstmt.setInt(1,2);
+
+             */
         } catch (Exception e){
             e.printStackTrace();
             System.out.println("Can't load the driver");
             System.exit(0);
         }
-        */
 
 
 
