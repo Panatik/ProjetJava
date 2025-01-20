@@ -20,12 +20,11 @@ public class Main {
         Boucles.fizzBuzz();
         */
 
-        //DataBaseManager dbManager = new DataBaseManager();
+        DataBaseManager dbManager = new DataBaseManager();
         //dbManager.CreateTables();
 
 
-
-        //login & regiter page
-        LoginFrame frame = new LoginFrame();
+        //login & register page
+        Form frame = new Form();
     }
 }

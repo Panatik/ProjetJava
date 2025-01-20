@@ -22,7 +22,7 @@ public class DataBaseManager {
 
     public void CreateTables() {
         String createTableSQL = """
-            create table if not exists User (
+            create table if not exists Users (
                 id int auto_increment primary key,
                 email varchar(100) not null unique,
                 pseudo varchar(20) not null,
@@ -37,5 +37,11 @@ public class DataBaseManager {
             System.err.println("Erreur : Problème lors de la création de la table User.");
             e.printStackTrace();
         }
+    }
+
+    public void AddUser() {
+        String addToTableSQL= """
+            insert into Users (email, pseudo, password) values ();
+        """;
     }
 }
