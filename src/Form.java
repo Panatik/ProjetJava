@@ -7,8 +7,9 @@ public class Form extends JFrame {
     public Form() {
         JFrame frame = new JFrame("IStore");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(3840, 2160);
+        frame.setSize(500, 500);
         frame.setLocationRelativeTo(null);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
@@ -17,15 +18,12 @@ public class Form extends JFrame {
         JLabel titleLabel = new JLabel("IStore", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20)); // Style du titre
         panel.add(titleLabel, BorderLayout.NORTH);
+
+        ImageIcon imageIcon = new ImageIcon(getClass().getResource("Skyrim-Logo.png"));
+        JLabel imageLabel = new JLabel(imageIcon, JLabel.CENTER);
+        panel.add(imageLabel, BorderLayout.CENTER);
+
         frame.add(panel);
-
-        ImageIcon imageIcon = new ImageIcon("Skyrim-Logo.png");
-        Image image = imageIcon.getImage();
-        Image resizedImage = image.getScaledInstance(1920,1080,Image.SCALE_SMOOTH);
-        ImageIcon resizedIcon = new ImageIcon(resizedImage);
-        JLabel imageLabel = new JLabel(resizedIcon);
-        frame.add(imageLabel);
-
         frame.setVisible(true);
 
         LoginFrame();

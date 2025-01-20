@@ -16,12 +16,11 @@ public class Main {
         }
 
 
-
         Boucles.fizzBuzz();
         */
 
         DataBaseManager dbManager = new DataBaseManager();
-        //dbManager.CreateTables();
+        dbManager.CreateTables();
 
 
         //login & register page
