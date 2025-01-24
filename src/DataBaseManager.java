@@ -1,4 +1,5 @@
 import java.sql.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class DataBaseManager {
     private static final String BDD = "bd_java"; // Nom de la base de données
@@ -40,8 +41,15 @@ public class DataBaseManager {
     }
 
     public void AddUser() {
-        String addToTableSQL= """
-            insert into Users (email, pseudo, password) values ();
-        """;
+
+        String plainPassword = "monMotDePasse123";
+
+        // Hacher le mot de passe
+        String hashedPassword = BCrypt.hashpw(plainPassword, BCrypt.gensalt());
+        System.out.println("Mot de passe haché : " + hashedPassword);
+
+        // Vérifier le mot de passe
+        boolean isMatch = BCrypt.checkpw(plainPassword, hashedPassword);
+        System.out.println("Le mot de passe correspond : " + isMatch);
     }
 }
