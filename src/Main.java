@@ -21,7 +21,6 @@ public class Main {
 
         DataBaseManager dbManager = new DataBaseManager();
         dbManager.CreateTables();
-        dbManager.AddUser();
 
 
         //login & register page

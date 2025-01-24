@@ -5,6 +5,8 @@ public class Form extends JFrame {
     private DataBaseManager dbmanager; 
 
     public Form() {
+        dbmanager = new DataBaseManager();
+
         JFrame frame = new JFrame("IStore");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500, 500);
@@ -81,10 +83,15 @@ public class Form extends JFrame {
 
 
         loginButton.addActionListener(e -> {
-            String username = usernameField.getText();
+            String email = usernameField.getText();
             String password = String.valueOf(passwordField.getPassword());
-            if (username.isEmpty() || password.isEmpty()) {
+
+            if (email.isEmpty() || password.isEmpty()) {
                 errorLabel.setText("Username or Password missing");
+            } else if (dbmanager.VerifyLogin(email, password)){
+                errorLabel.setText("Connection réussie");
+            } else {
+                errorLabel.setText("Connection pas réussie");
             }
         });
 
@@ -116,6 +123,10 @@ public class Form extends JFrame {
 
         gridPanel.add(new JLabel(""));
 
+        gridPanel.add(new JLabel("Email:", JLabel.CENTER));
+        JTextField emailField = new JTextField();
+        gridPanel.add(emailField);
+
         gridPanel.add(new JLabel("Username:", JLabel.CENTER));
         JTextField usernameField = new JTextField();
         gridPanel.add(usernameField);
@@ -146,6 +157,16 @@ public class Form extends JFrame {
         loginButton.addActionListener(e -> {
             frameRegister.dispose();
             LoginFrame();
+        });
+
+        registerButton.addActionListener(e -> {
+            String email = new String(emailField.getText());
+            String login = new String(usernameField.getText());
+            String passwd = new String(passwordField.getPassword());
+
+            dbmanager.AddUser(email, login, passwd);
+
+            System.out.println(login);
         });
     }
 
