@@ -28,7 +28,7 @@ public class DataBaseManager {
                 email varchar(100) not null unique,
                 pseudo varchar(20) not null,
                 password varchar(255) not null,
-                role enum('admin', 'user', 'employee') not null default 'user'
+                role enum('admin', 'user') not null default 'user'
             );
         """;
         try (Statement statement = this.connection.createStatement()) {
