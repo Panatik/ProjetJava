@@ -3,6 +3,8 @@ import javax.swing.*;
 
 public class Form extends JFrame {
     private DataBaseManager dbmanager; 
+    private User currentUser;
+    private JLabel errorLabel;
 
     public Form() {
         dbmanager = new DataBaseManager();
@@ -21,7 +23,7 @@ public class Form extends JFrame {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 20)); // Style du titre
         panel.add(titleLabel, BorderLayout.NORTH);
 
-        ImageIcon imageIcon = new ImageIcon(getClass().getResource("Skyrim-Logo.png"));
+        ImageIcon imageIcon = new ImageIcon(getClass().getResource("ressources/Skyrim-Logo.png"));
         JLabel imageLabel = new JLabel(imageIcon, JLabel.CENTER);
         panel.add(imageLabel, BorderLayout.CENTER);
 
@@ -30,6 +32,19 @@ public class Form extends JFrame {
 
         LoginFrame();
     }
+
+    public void setErrorLabel(String output) {
+            errorLabel.setText(output);
+    }
+
+    public void verify_email(String email) {
+        if (!dbmanager.verify_email_format(email)) {
+            setErrorLabel("Email invalide");
+            System.out.println("Email format not valid");
+            return;
+        }
+    }
+
 
     public void LoginFrame(){
         JFrame frame = new JFrame("IStore Login / register");
@@ -67,7 +82,7 @@ public class Form extends JFrame {
         JButton loginButton = new JButton("Login");
         gridPanel.add(loginButton);
         
-        JLabel errorLabel = new JLabel("", JLabel.CENTER);
+        errorLabel = new JLabel("", JLabel.CENTER);
         errorLabel.setFont(new Font("Arial", Font.BOLD, 20));
         errorLabel.setForeground(Color.BLACK);
         gridPanel.add(errorLabel);
@@ -87,11 +102,15 @@ public class Form extends JFrame {
             String password = String.valueOf(passwordField.getPassword());
 
             if (email.isEmpty() || password.isEmpty()) {
-                errorLabel.setText("Username or Password missing");
-            } else if (dbmanager.VerifyLogin(email, password)){
-                errorLabel.setText("Connection réussie");
+                setErrorLabel("Username or Password missing");
             } else {
-                errorLabel.setText("Connection pas réussie");
+                verify_email(email);
+                if (dbmanager.VerifyLogin(email, password)){
+                    setErrorLabel("Connection réussie");
+                    currentUser = new User(email);
+                } else {
+                    setErrorLabel("Utilisateur inconnu");
+                }
             }
         });
 
@@ -100,6 +119,9 @@ public class Form extends JFrame {
             RegisterFrame();
         });
     }
+
+
+
 
     public void RegisterFrame(){
         JFrame frameRegister = new JFrame("IStore Register");
@@ -137,10 +159,7 @@ public class Form extends JFrame {
 
         gridPanel.add(new JLabel(""));
 
-        JButton loginButton = new JButton("Login");
-        gridPanel.add(loginButton);
-
-        JLabel errorLabel = new JLabel("", JLabel.CENTER);
+        errorLabel = new JLabel("", JLabel.CENTER);
         errorLabel.setFont(new Font("Arial", Font.BOLD, 20));
         errorLabel.setForeground(Color.BLACK);
         gridPanel.add(errorLabel);
@@ -154,21 +173,25 @@ public class Form extends JFrame {
         frameRegister.add(panel);
         frameRegister.setVisible(true);
 
-        loginButton.addActionListener(e -> {
-            frameRegister.dispose();
-            LoginFrame();
-        });
 
         registerButton.addActionListener(e -> {
             String email = new String(emailField.getText());
             String login = new String(usernameField.getText());
             String passwd = new String(passwordField.getPassword());
 
-            dbmanager.AddUser(email, login, passwd);
+            verify_email(email);
+            String output = dbmanager.AddUser(email, login, passwd, "");
+            setErrorLabel(output);
 
-            System.out.println(login);
+            if (output.equals("Utilisateur creer avec succes")) {
+                Timer timer = new Timer(1000, event -> {
+                    frameRegister.dispose();
+                    LoginFrame();
+                });
+                timer.setRepeats(false); // On exécute le Timer une seule fois
+                timer.start();
+            }
+
         });
     }
-
-
 }
