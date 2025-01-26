@@ -9,26 +9,26 @@ public class Form extends JFrame {
     public Form() {
         dbmanager = new DataBaseManager();
 
-        JFrame frame = new JFrame("IStore");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500, 500);
-        frame.setLocationRelativeTo(null);
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.setBackground(Color.GRAY);
-
-        JLabel titleLabel = new JLabel("IStore", JLabel.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 20)); // Style du titre
-        panel.add(titleLabel, BorderLayout.NORTH);
-
-        ImageIcon imageIcon = new ImageIcon(getClass().getResource("ressources/Skyrim-Logo.png"));
-        JLabel imageLabel = new JLabel(imageIcon, JLabel.CENTER);
-        panel.add(imageLabel, BorderLayout.CENTER);
-
-        frame.add(panel);
-        frame.setVisible(true);
+        //JFrame frame = new JFrame("IStore");
+        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //frame.setSize(500, 500);
+        //frame.setLocationRelativeTo(null);
+        //frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+//
+        //JPanel panel = new JPanel();
+        //panel.setLayout(new BorderLayout());
+        //panel.setBackground(Color.GRAY);
+//
+        //JLabel titleLabel = new JLabel("IStore", JLabel.CENTER);
+        //titleLabel.setFont(new Font("Arial", Font.BOLD, 20)); // Style du titre
+        //panel.add(titleLabel, BorderLayout.NORTH);
+//
+        //ImageIcon imageIcon = new ImageIcon(getClass().getResource("ressources/Skyrim-Logo.png"));
+        //JLabel imageLabel = new JLabel(imageIcon, JLabel.CENTER);
+        //panel.add(imageLabel, BorderLayout.CENTER);
+//
+        //frame.add(panel);
+        //frame.setVisible(true);
 
         LoginFrame();
     }
@@ -111,12 +111,32 @@ public class Form extends JFrame {
                 setErrorLabel("Email invalide");
                 return;
             }
-            User user = dbmanager.VerifyLogin(email, password);
+            currentUser = dbmanager.VerifyLogin(email, password);
 
-            if (user != null) {
+            if (currentUser != null) {
                 setErrorLabel("Connexion réussie");
-                currentUser = user;
-                System.out.println(currentUser.toString());
+                if ("user".equals(currentUser.getRole())) {
+                    frame.dispose();
+                    //Userdashboard(currentUser);
+                } else if ("admin".equals(currentUser.getRole())) {
+                    frame.dispose();
+                    String output = dbmanager.Add_employee_whitelist("test@gmail.com");
+                    System.out.println(output);
+                    Admindashboard(currentUser);
+
+                }
+                //if (currentUser instanceof Admin) {
+                //    Admin admin = (Admin) currentUser;
+                //    admin.testdefadmin();
+                //    frame.dispose();
+                //    //Admindashboard(admin);
+                //    this.dbmanager.Add_employee_whitelist("test@gmail.com");
+                //} else if (currentUser instanceof Employee) {
+                //    Employee employee = (Employee) currentUser;
+                //    employee.testdefemployee();
+                //}
+
+                
             } else {
                 setErrorLabel("Utilisateur inconnu");
             }
@@ -205,4 +225,57 @@ public class Form extends JFrame {
             }
         });
     }
+
+    private void Admindashboard (User admin) {
+        JFrame frame = new JFrame("Admin Panel - IStore");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null);
+
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(Color.LIGHT_GRAY);
+
+        JLabel titleLabel = new JLabel("Admin Panel - logged in as: " + admin.getUsername(), JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+        mainPanel.add(titleLabel, BorderLayout.NORTH);
+
+        JPanel buttonPanel = new JPanel(new GridLayout(5, 2, 15, 15)); // Grid: 5 rows, 2 columns
+        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+
+        JButton createUserButton = new JButton("ajouter employee a la whiteliste");
+        JButton createStoreButton = new JButton("Créer un magasin");
+        JButton deleteStoreButton = new JButton("Supprimer un magasin");
+        JButton assignEmployeeButton = new JButton("Assigner des employés à un magasin");
+        JButton createInventoryItemButton = new JButton("Créer un item dans l'inventaire");
+        JButton deleteInventoryItemButton = new JButton("Supprimer un item de l'inventaire");
+        JButton updateUserButton = new JButton("Mettre à jour un utilisateur");
+        JButton deleteUserButton = new JButton("Supprimer un compte utilisateur");
+        JButton manageWhitelistButton = new JButton("Gérer les emails whitelistés");
+
+        buttonPanel.add(createUserButton);
+        buttonPanel.add(createStoreButton);
+        buttonPanel.add(deleteStoreButton);
+        buttonPanel.add(assignEmployeeButton);
+        buttonPanel.add(createInventoryItemButton);
+        buttonPanel.add(deleteInventoryItemButton);
+        buttonPanel.add(updateUserButton);
+        buttonPanel.add(deleteUserButton);
+        buttonPanel.add(manageWhitelistButton);
+
+        mainPanel.add(buttonPanel, BorderLayout.CENTER);
+
+        frame.add(mainPanel);
+        frame.setVisible(true);
+    }
+
+
+
+
+
+
+
+
+
 }

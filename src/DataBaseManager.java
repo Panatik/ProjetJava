@@ -22,7 +22,7 @@ public class DataBaseManager {
     }
 
     public void CreateTables() {
-        String createTableSQL = """
+        String createUsersTableSQL = """
             create table if not exists Users (
                 id int auto_increment primary key,
                 email varchar(100) not null unique,
@@ -31,19 +31,31 @@ public class DataBaseManager {
                 role enum('admin', 'user') not null default 'user'
             );
         """;
+    
+        String createEmployeeWhitelistTableSQL = """
+            create table if not exists Employee_whitelist (
+                email varchar(100) not null unique
+            );
+        """;
+    
         try (Statement statement = this.connection.createStatement()) {
-            statement.executeUpdate(createTableSQL);
-            System.out.println("Table User creer avec succes.");
+            // Création de la table Users
+            statement.executeUpdate(createUsersTableSQL);
+            System.out.println("Table Users créée avec succès.");
+    
+            // Création de la table Employee_whitelist
+            statement.executeUpdate(createEmployeeWhitelistTableSQL);
+            System.out.println("Table Employee_whitelist créée avec succès.");
         } catch (SQLException e) {
-            System.err.println("Erreur : Problème lors de la création de la table User.");
+            System.err.println("Erreur : Problème lors de la création des tables.");
             e.printStackTrace();
         }
     }
 
     public void add_admins () {
         System.out.println("add admins account");
-        AddUser("clement@fadelogidal.fr", "admin1", "test", "admin");
-        AddUser("mathias@fadelogidal.fr", "admin2", "test", "admin");
+        AddUser("clement@fadelogidal.fr", "Clement", "test", "admin");
+        AddUser("mathias@fadelogidal.fr", "Mathias", "test", "admin");
     }
 
     public String hash_password(String password) {
@@ -89,7 +101,7 @@ public class DataBaseManager {
 
         } catch (SQLException e) {
             if (e.getMessage().contains("Duplicata") ||  e.getMessage().contains("users.email")) {
-                output = "Cette adresse email est déjà utilisée.";
+                output = "Cette adresse email existe dejà";
             } else {
                 output = "Erreur : Problème lors de l'ajout de l'utilisateur.";
                 System.out.println(e.getMessage());
@@ -100,6 +112,7 @@ public class DataBaseManager {
     }
 
     public User VerifyLogin(String email, String passwd) {
+        String role;
         String QuerySQL = "SELECT * FROM Users WHERE email = ?";
 
         try (PreparedStatement statement = this.connection.prepareStatement(QuerySQL)) {
@@ -108,20 +121,46 @@ public class DataBaseManager {
                 //datasSet.next() permet d'aller à la ligne dans les résultats de la query (si la query retourne rien ça renvoie false)
                 //BCrypt.machin ça permet de voir si le mdp et sa version haché correspondent ou pas
                 if (datasSet.next() && BCrypt.checkpw(passwd, datasSet.getString("password"))){
-                    return new User(
-                        datasSet.getString("email"),
-                        datasSet.getString("pseudo"),
-                        datasSet.getString("password"),
-                        datasSet.getString("role"),
-                        datasSet.getInt("id")
-                    );
+                    role = datasSet.getString("role");
+                        return new User(
+                            datasSet.getString("email"),
+                            datasSet.getString("pseudo"),
+                            datasSet.getString("password"),
+                            datasSet.getString("role"),
+                            datasSet.getInt("id")
+                        );
+                    }
                 } 
-            }
         } catch (SQLException e) {
             System.err.println("Erreur : Problème lors de la vérification du login");
             //e.printStackTrace(); debug print
         }
         return null;
+    }
+
+    public String Add_employee_whitelist(String email) {
+        String addToTableSQL = "INSERT INTO Employee_whitelist (email) VALUES (?)";
+        String output;
+    
+        if (verify_email_format(email)) {
+            try (PreparedStatement statement = this.connection.prepareStatement(addToTableSQL)) {
+                statement.setString(1, email);
+                statement.executeUpdate();
+                output = "Email ajouté à la whitelist avec succès.";
+                return output;
+            } catch (SQLException e) {
+                if (e.getMessage().contains("duplicate") || e.getMessage().contains("email")) {
+                    output = "Cette adresse email existe déjà.";
+                } else {
+                    output = "Erreur : Problème lors de l'ajout de l'utilisateur.";
+                    //System.err.println("Détails de l'erreur : " + e.getMessage()); debug print
+                }
+            }
+        } else {
+            output = "Format d'email invalide. Veuillez réessayer.";
+        }
+    
+        return output;
     }
 
 
