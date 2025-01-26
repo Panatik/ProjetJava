@@ -24,7 +24,7 @@ public class Main {
         dbManager.CreateTables();
         
         User user_methods = new User();
-        user_methods.add_admins();
+        user_methods.add_admins();  
 
         //login & register page
         Form frame = new Form();

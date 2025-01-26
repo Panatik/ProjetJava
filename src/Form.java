@@ -2,17 +2,18 @@ import java.awt.*;
 import javax.swing.*;
 
 public class Form extends JFrame {
-    //private DataBaseManager dbmanager; 
     private User currentUser;
     
     private JLabel errorLabel;
     
     private final Tools tools;
     private final User user_methods;
+    
 
     public Form() {
         tools = new Tools();
         user_methods = new User();
+        
         //JFrame frame = new JFrame("IStore");
         //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //frame.setSize(500, 500);
@@ -247,10 +248,10 @@ public class Form extends JFrame {
         JButton createStoreButton = new JButton("Créer un magasin");
         JButton DisplayStores = new JButton("afficher tous les magasins");
         JButton deleteStoreButton = new JButton("Supprimer un magasin");
+        JButton assignEmployeeButton = new JButton("Assigner des employés à un magasin");
 
 
         //todo
-        JButton assignEmployeeButton = new JButton("Assigner des employés à un magasin");
         JButton createInventoryItemButton = new JButton("Créer un item dans l'inventaire");
         JButton deleteInventoryItemButton = new JButton("Supprimer un item de l'inventaire");
         JButton updateUserButton = new JButton("Mettre à jour un utilisateur");
@@ -285,7 +286,7 @@ public class Form extends JFrame {
                 Object[][] data = admin.get_format_users_data();
                 String[] columnNames = {"ID", "Email", "Pseudo", "Role", "Store_id"};
                 
-                DisplayJtable(data, columnNames);
+                DisplayJtable(data, columnNames, "Users");
                 
             } catch (Exception ex) {
                 //ex.printStackTrace(); // debug print
@@ -309,7 +310,7 @@ public class Form extends JFrame {
                 Object[][] data = admin.get_format_stores_data();
                 String[] columnNames = {"ID", "Nom du magasin"};
                 
-                DisplayJtable(data, columnNames);
+                DisplayJtable(data, columnNames, "Stores");
                 
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -340,7 +341,7 @@ public class Form extends JFrame {
     }
 
 
-    public void DisplayJtable(Object[][] data, String[] columnNames) {
+    public void DisplayJtable(Object[][] data, String[] columnNames, String title) {
         JTable table = new JTable(data, columnNames);
                 
         // Customize table appearance (optional)
@@ -352,7 +353,7 @@ public class Form extends JFrame {
         JScrollPane scrollPane = new JScrollPane(table);
         
         // Create a new JFrame to display the table
-        JFrame tableFrame = new JFrame("Liste des utilisateurs (role: User)");
+        JFrame tableFrame = new JFrame(title);
         tableFrame.setLocationRelativeTo(null);
         tableFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         tableFrame.setSize(600, 400);
