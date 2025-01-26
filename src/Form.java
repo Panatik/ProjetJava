@@ -274,12 +274,12 @@ public class Form extends JFrame {
         JButton deleteEmployeeButton = new JButton("supprimer un employee");
         JButton updateUserButton = new JButton("Mettre à jour un utilisateur");
         JButton DisplayInventoryItemsButton = new JButton("afficher tous les items de l'inventaire");
-
-
-        //todo
-        JButton createInventoryItemButton = new JButton("Créer un item dans l'inventaire");
         JButton updateInventoryItemButton = new JButton("Mettre à jour un item de l'inventaire");
         JButton deleteInventoryItemButton = new JButton("Supprimer un item de l'inventaire");
+
+
+        JButton createInventoryItemButton = new JButton("Créer un item dans l'inventaire");
+        //todo
 
         userPanel.add(DisplayEmployeesButton); // done
         magasinPanel.add(DisplayStores);  // done
@@ -289,10 +289,10 @@ public class Form extends JFrame {
         userPanel.add(assignEmployeeButton);  // done
 
         userPanel.add(updateUserButton); // done
-        inventoryPanel.add(updateInventoryItemButton);
+        inventoryPanel.add(updateInventoryItemButton); //done
 
         magasinPanel.add(createStoreButton);  // done
-        inventoryPanel.add(createInventoryItemButton);
+        inventoryPanel.add(createInventoryItemButton); 
 
         userPanel.add(deleteEmployeeButton);  // done
         magasinPanel.add(deleteStoreButton);  // done
@@ -355,6 +355,18 @@ public class Form extends JFrame {
 
         });
 
+        deleteInventoryItemButton.addActionListener(e -> {
+            String item_id_str = JOptionPane.showInputDialog("Enter the id of the item to delete");
+            int item_id = Integer.parseInt(item_id_str);
+            if (user_methods.is_item_id_valid(item_id)) {
+                String output = admin.Delete_item(item_id);
+                JOptionPane.showMessageDialog(frame, output);
+            } else {
+                JOptionPane.showMessageDialog(frame, "Invalid item ID. Please enter a valid item ID.");
+            }
+
+        });
+
         deleteEmployeeButton.addActionListener(e -> {
             String user_id_str = JOptionPane.showInputDialog("Enter the id of the user to delete");
             int user_id = Integer.parseInt(user_id_str);
@@ -363,6 +375,48 @@ public class Form extends JFrame {
                 JOptionPane.showMessageDialog(frame, output);
             } else {
                 JOptionPane.showMessageDialog(frame, "Invalid user ID. Please enter a valid user ID.");
+            }
+        });
+
+        createInventoryItemButton.addActionListener(e -> {
+            try {
+                String item_name = JOptionPane.showInputDialog("Enter the name of the item:");
+                
+                float price;
+                try {
+                    price = Float.parseFloat(JOptionPane.showInputDialog("Enter the price of the item (1.00, 2.99, 3.99, ...):"));
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(frame, "Invalid price. Please enter a valid number.");
+                    return;
+                }
+        
+                int quantity;
+                try {
+                    quantity = Integer.parseInt(JOptionPane.showInputDialog("Enter the quantity of the item (1, 2, 3, ...):"));
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(frame, "Invalid quantity. Please enter a valid integer.");
+                    return;
+                }
+        
+                int store_id;
+                try {
+                    store_id = Integer.parseInt(JOptionPane.showInputDialog("Enter the id of the store for the item:"));
+                    if (!user_methods.is_store_id_valid(store_id)) {
+                        JOptionPane.showMessageDialog(frame, "Invalid store ID. Please enter a valid store ID.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(frame, "Invalid store ID. Please enter a valid integer.");
+                    return;
+                }
+        
+                String output = admin.Create_item(item_name, price, quantity, store_id);
+                JOptionPane.showMessageDialog(frame, output);
+                
+            } catch (Exception ex) {
+                // Si une exception inattendue se produit
+                JOptionPane.showMessageDialog(frame, "An error occurred. Please try again.");
+                ex.printStackTrace();
             }
         });
 

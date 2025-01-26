@@ -111,6 +111,16 @@ public class DataBaseManager {
         }
     }
 
+    public void reset_items_after_store_delete(int id) {
+        String updateTableSQL = "UPDATE Items set store_id = 0 WHERE store_id=?";
+        try (PreparedStatement statement = this.connection.prepareStatement(updateTableSQL)) {
+            statement.setInt(1, id);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error while updating Users table: " + e.getMessage());
+        }
+    }
+
     //public void add_admins () {
     //    System.out.println("add admins account");
     //    AddUser("clement@fadelogidal.fr", "Clement", "test", "admin");

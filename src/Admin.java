@@ -48,6 +48,20 @@ public class Admin extends User {
             return "Erreur : Problème lors de la création du magasin.";
         }
     }
+
+    public String Create_item(String name, Float price, int quantity, int store_id) {
+        String query = "insert into items (item_name, item_price, item_quantity, store_id) values (?, ?, ?, ?)";
+        try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(query)) {
+            statement.setString(1, name);
+            statement.setFloat(2, price);
+            statement.setInt(3, quantity);
+            statement.setInt(4, store_id);
+            statement.executeUpdate();
+            return "Article créé avec succès.";
+        } catch (SQLException e) {
+            return "Erreur : Problème lors de la création de l'article.";
+        }
+    }
     
     public String Delete_Store(int id) {
         String deleteFromTableSQL = "delete from Stores where id =?";
@@ -55,6 +69,7 @@ public class Admin extends User {
             statement.setInt(1, id);
             statement.executeUpdate();
             dbmanager.reset_employee_after_store_delete(id);
+            dbmanager.reset_items_after_store_delete(id);
             return "Magasin supprimé avec succès.";
         } catch (SQLException e) {
             return "Erreur : Problème lors de la suppression du magasin.";
@@ -69,6 +84,17 @@ public class Admin extends User {
             return "Utilisateur supprimé avec succès.";
         } catch (SQLException e) {
             return "Erreur : Problème lors de la suppression de l'utilisateur.";
+        }
+    }
+
+    public String Delete_item(int id) {
+        String deleteFromTableSQL = "delete from Items where id =?";
+        try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(deleteFromTableSQL)) {
+            statement.setInt(1, id);
+            statement.executeUpdate();
+            return "Article supprimé avec succès.";
+        } catch (SQLException e) {
+            return "Erreur : Problème lors de la suppression de l'article.";
         }
     }
 
