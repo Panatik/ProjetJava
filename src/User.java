@@ -14,11 +14,12 @@ public class User {
     protected final  DataBaseManager dbmanager; 
     protected final Tools tools;
 
+    //initialization des class abstraites dans les 2 constructeurs
+    {
+       dbmanager = new DataBaseManager();
+       tools = new Tools();
+    }
 
-     {
-        dbmanager = new DataBaseManager();
-        tools = new Tools();
-     }
     public User(String email, String username, String password_hash, String role, int user_id) {
         this.email = email;
         this.username = username;
@@ -63,7 +64,6 @@ public class User {
 
 
     public User VerifyLogin(String email, String passwd) {
-        String role;
         String QuerySQL = "SELECT * FROM Users WHERE email = ?";
 
         try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(QuerySQL)) {
@@ -72,7 +72,7 @@ public class User {
                 //datasSet.next() permet d'aller à la ligne dans les résultats de la query (si la query retourne rien ça renvoie false)
                 //BCrypt.machin ça permet de voir si le mdp et sa version haché correspondent ou pas
                 if (datasSet.next() && BCrypt.checkpw(passwd, datasSet.getString("password"))) {
-                    role = datasSet.getString("role");
+                    String role = datasSet.getString("role");
                     if (role.equals("admin")) {
                         return new Admin(
                             datasSet.getString("email"),
@@ -109,26 +109,46 @@ public class User {
         if (role.isEmpty()) {
             role = "user";
         }
+        
+        if (is_email_whitelisted(email)) {
+            try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(addToTableSQL)) {
+                statement.setString(1, email);
+                statement.setString(2, login);
+                statement.setString(3, hashedPassword);
+                statement.setString(4, role);
 
-        try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(addToTableSQL)) {
-            //On remplace les ? par les paramètres (1,2,3... sont des index)
-            statement.setString(1, email);
-            statement.setString(2, login);
-            statement.setString(3, hashedPassword);
-            statement.setString(4, role);
-            
-            statement.executeUpdate();
-            output = "Utilisateur creer avec succes";
-        } catch (SQLException e) {
-            if (e.getMessage().contains("Duplicata") ||  e.getMessage().contains("users.email")) {
-                output = "Cette adresse email existe dejà";
-            } else {
-                output = "Erreur : Problème lors de l'ajout de l'utilisateur.";
-                System.out.println(e.getMessage());
+                statement.executeUpdate();
+                output = "Utilisateur creer avec succes";
+            } catch (SQLException e) {
+                if (e.getMessage().contains("Duplicata") ||  e.getMessage().contains("users.email")) {
+                    output = "Cette adresse email existe dejà";
+                } else {
+                    output = "Erreur : Problème lors de l'ajout de l'utilisateur.";
+                    System.out.println(e.getMessage());
+                }
             }
+            System.out.println(output);
+        } else {
+            output = "not whitelisted";
         }
-        System.out.println(output);
         return output;
+    }
+
+    public boolean is_email_whitelisted(String email) {
+        String QuerySQL = "SELECT * FROM Users WHERE email = ?";
+        try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(QuerySQL)) {
+            statement.setString(1, email);
+            try (ResultSet datasSet = statement.executeQuery()){
+                return datasSet.next();
+            } catch (SQLException e) {
+                System.err.println("Erreur : Problème lors de la vérification de l'adresse email");
+                //e.printStackTrace(); debug print
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur : Problème lors de la connexion à la base de données");
+            //e.printStackTrace(); debug print
+        }
+        return false;
     }
 
 
