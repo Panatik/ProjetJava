@@ -230,17 +230,39 @@ public class Form extends JFrame {
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
 
+        //main panel
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(Color.LIGHT_GRAY);
 
+        //top panel
+        JPanel TopPanel = new JPanel(new BorderLayout());
+        TopPanel.setBackground(Color.LIGHT_GRAY);
+
+        //titre
         JLabel titleLabel = new JLabel("Admin Panel - logged in as: " + admin.getUsername(), JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
-        mainPanel.add(titleLabel, BorderLayout.NORTH);
+        TopPanel.add(titleLabel, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new GridLayout(5, 2, 15, 15)); // Grid: 5 rows, 2 columns
-        buttonPanel.setBackground(Color.WHITE);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+        //boutton disconnect
+        JButton disconnect = new JButton("Disconnect");
+        disconnect.setPreferredSize(new Dimension(120, 30));
+        disconnect.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 15));
+        TopPanel.add(disconnect, BorderLayout.EAST);
+
+        mainPanel.add(TopPanel, BorderLayout.NORTH);
+
+        JPanel magasinPanel = new JPanel(new GridLayout(5, 2, 15, 15)); // Grid: 5 rows, 2 columns
+        magasinPanel.setBackground(Color.WHITE);
+        magasinPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+
+        JPanel inventoryPanel = new JPanel(new GridLayout(5, 2, 15, 15)); // Grid: 5 rows, 2 columns
+        inventoryPanel.setBackground(Color.WHITE);
+        inventoryPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+
+        JPanel userPanel = new JPanel(new GridLayout(5, 2, 15, 15)); // Grid: 5 rows, 2 columns
+        userPanel.setBackground(Color.WHITE);
+        userPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
 
         //done
         JButton AddwhitelistUserButton = new JButton("ajouter employee a la whiteliste");
@@ -249,30 +271,48 @@ public class Form extends JFrame {
         JButton DisplayStores = new JButton("afficher tous les magasins");
         JButton deleteStoreButton = new JButton("Supprimer un magasin");
         JButton assignEmployeeButton = new JButton("Assigner des employés à un magasin");
+        JButton deleteEmployeeButton = new JButton("supprimer un employee");
+        JButton updateUserButton = new JButton("Mettre à jour un utilisateur");
+        JButton DisplayInventoryItemsButton = new JButton("afficher tous les items de l'inventaire");
 
 
         //todo
         JButton createInventoryItemButton = new JButton("Créer un item dans l'inventaire");
+        JButton updateInventoryItemButton = new JButton("Mettre à jour un item de l'inventaire");
         JButton deleteInventoryItemButton = new JButton("Supprimer un item de l'inventaire");
-        JButton updateUserButton = new JButton("Mettre à jour un utilisateur");
-        JButton deleteUserButton = new JButton("Supprimer un compte utilisateur");
 
-        buttonPanel.add(AddwhitelistUserButton);
-        buttonPanel.add(DisplayEmployeesButton);
-        buttonPanel.add(DisplayStores);
-        buttonPanel.add(createStoreButton);
-        buttonPanel.add(deleteStoreButton);
-        buttonPanel.add(assignEmployeeButton);
-        buttonPanel.add(createInventoryItemButton);
-        buttonPanel.add(deleteInventoryItemButton);
-        buttonPanel.add(updateUserButton);
-        buttonPanel.add(deleteUserButton);
+        userPanel.add(DisplayEmployeesButton); // done
+        magasinPanel.add(DisplayStores);  // done
+        inventoryPanel.add(DisplayInventoryItemsButton); // done
 
-        mainPanel.add(buttonPanel, BorderLayout.CENTER);
+        userPanel.add(AddwhitelistUserButton);  // done
+        userPanel.add(assignEmployeeButton);  // done
+
+        userPanel.add(updateUserButton); // done
+        inventoryPanel.add(updateInventoryItemButton);
+
+        magasinPanel.add(createStoreButton);  // done
+        inventoryPanel.add(createInventoryItemButton);
+
+        userPanel.add(deleteEmployeeButton);  // done
+        magasinPanel.add(deleteStoreButton);  // done
+        inventoryPanel.add(deleteInventoryItemButton);
+
+        JTabbedPane tabPanel = new JTabbedPane();
+        tabPanel.addTab("Utilisateurs", userPanel);
+        tabPanel.addTab("Magasin", magasinPanel);
+        tabPanel.addTab("Inventaire", inventoryPanel);
+        mainPanel.add(tabPanel, BorderLayout.CENTER);
+        //mainPanel.add(magasinPanel, BorderLayout.CENTER);
 
         frame.add(mainPanel);
         frame.setVisible(true);
 
+
+        disconnect.addActionListener(e -> {
+            frame.dispose();
+            LoginFrame();
+        });
 
         AddwhitelistUserButton.addActionListener(e -> {
             String email = JOptionPane.showInputDialog("Enter the email of the employee to add:");
