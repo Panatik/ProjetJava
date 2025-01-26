@@ -2,13 +2,17 @@ import java.awt.*;
 import javax.swing.*;
 
 public class Form extends JFrame {
-    private DataBaseManager dbmanager; 
+    //private DataBaseManager dbmanager; 
     private User currentUser;
+    
     private JLabel errorLabel;
+    
+    private final Tools tools;
+    private final User user_methods;
 
     public Form() {
-        dbmanager = new DataBaseManager();
-
+        tools = new Tools();
+        user_methods = new User();
         //JFrame frame = new JFrame("IStore");
         //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //frame.setSize(500, 500);
@@ -38,7 +42,7 @@ public class Form extends JFrame {
     }
 
     public boolean  verify_email(String email) {
-        if (!dbmanager.verify_email_format(email)) {
+        if (!tools.verify_email_format(email)) {
             setErrorLabel("Email invalide");
             System.out.println("Email format not valid");
             return false;
@@ -111,30 +115,22 @@ public class Form extends JFrame {
                 setErrorLabel("Email invalide");
                 return;
             }
-            currentUser = dbmanager.VerifyLogin(email, password);
+            currentUser = user_methods.VerifyLogin(email, password);
 
             if (currentUser != null) {
                 setErrorLabel("Connexion réussie");
-                if ("user".equals(currentUser.getRole())) {
+                if (currentUser instanceof Admin) {
+                    Admin admin = (Admin) currentUser;
+                    admin.testdef();
                     frame.dispose();
-                    //Userdashboard(currentUser);
-                } else if ("admin".equals(currentUser.getRole())) {
-                    frame.dispose();
-                    String output = dbmanager.Add_employee_whitelist("test@gmail.com");
+                    String output = admin.Add_employee_whitelist("test2@test.com");
                     System.out.println(output);
-                    Admindashboard(currentUser);
+                    Admindashboard(admin);
 
+                } else if (currentUser instanceof Employee) {
+                    Employee employee = (Employee) currentUser;
+                    employee.testdefemployee();
                 }
-                //if (currentUser instanceof Admin) {
-                //    Admin admin = (Admin) currentUser;
-                //    admin.testdefadmin();
-                //    frame.dispose();
-                //    //Admindashboard(admin);
-                //    this.dbmanager.Add_employee_whitelist("test@gmail.com");
-                //} else if (currentUser instanceof Employee) {
-                //    Employee employee = (Employee) currentUser;
-                //    employee.testdefemployee();
-                //}
 
                 
             } else {
@@ -212,10 +208,10 @@ public class Form extends JFrame {
             }
         
             // Ajouter l'utilisateur dans la base de données
-            String output = dbmanager.AddUser(email, usrname, passwd, "");
+            String output = user_methods.AddUser(email, usrname, passwd, "");
             setErrorLabel(output);
         
-            if (output.equals("Utilisateur créé avec succès")) {
+            if (output.equals("Utilisateur creer avec succes")) {
                 Timer timer = new Timer(1000, event -> {
                     frameRegister.dispose();
                     LoginFrame();

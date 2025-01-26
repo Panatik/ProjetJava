@@ -1,11 +1,24 @@
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.mindrot.jbcrypt.BCrypt;
+
 public class User {
     private String email;
     private String username;
     private String password_hash;
     private String role;
     private int user_id;
-    private DataBaseManager dbmanager; 
 
+    protected final  DataBaseManager dbmanager; 
+    protected final Tools tools;
+
+
+     {
+        dbmanager = new DataBaseManager();
+        tools = new Tools();
+     }
     public User(String email, String username, String password_hash, String role, int user_id) {
         this.email = email;
         this.username = username;
@@ -13,6 +26,8 @@ public class User {
         this.role = role;
         this.user_id = user_id;
     }
+
+    public User() {}
 
     public String getEmail() {
         return email;
@@ -40,7 +55,82 @@ public class User {
                 + ", user_id=" + user_id + "]";
     }
 
-    
+    public void add_admins () {
+        System.out.println("add admins account");
+        AddUser("clement@fadelogidal.fr", "Clement", "test", "admin");
+        AddUser("mathias@fadelogidal.fr", "Mathias", "test", "admin");
+    }
+
+
+    public User VerifyLogin(String email, String passwd) {
+        String role;
+        String QuerySQL = "SELECT * FROM Users WHERE email = ?";
+
+        try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(QuerySQL)) {
+            statement.setString(1, email);
+            try (ResultSet datasSet = statement.executeQuery()){
+                //datasSet.next() permet d'aller à la ligne dans les résultats de la query (si la query retourne rien ça renvoie false)
+                //BCrypt.machin ça permet de voir si le mdp et sa version haché correspondent ou pas
+                if (datasSet.next() && BCrypt.checkpw(passwd, datasSet.getString("password"))) {
+                    role = datasSet.getString("role");
+                    if (role.equals("admin")) {
+                        return new Admin(
+                            datasSet.getString("email"),
+                            datasSet.getString("pseudo"),
+                            datasSet.getString("password"),
+                            datasSet.getString("role"),
+                            datasSet.getInt("id")
+                        );
+                    } else if (role.equals("user")) {
+                        return new Employee(
+                            datasSet.getString("email"),
+                            datasSet.getString("pseudo"),
+                            datasSet.getString("password"),
+                            datasSet.getString("role"),
+                            datasSet.getInt("id")
+                        );
+                    }
+                }
+            } 
+        } catch (SQLException e) {
+            System.err.println("Erreur : Problème lors de la vérification du login");
+            //e.printStackTrace(); debug print
+        }
+        return null;
+    }
+
+    public String AddUser(String email, String login, String passwd, String role) {
+        String output;
+        String hashedPassword = tools.hash_password(passwd);
+        String addToTableSQL= """
+            insert into Users (email, pseudo, password, role) values (?, ?, ?, ?);
+        """;
+
+        if (role.isEmpty()) {
+            role = "user";
+        }
+
+        try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(addToTableSQL)) {
+            //On remplace les ? par les paramètres (1,2,3... sont des index)
+            statement.setString(1, email);
+            statement.setString(2, login);
+            statement.setString(3, hashedPassword);
+            statement.setString(4, role);
+            
+            statement.executeUpdate();
+            output = "Utilisateur creer avec succes";
+        } catch (SQLException e) {
+            if (e.getMessage().contains("Duplicata") ||  e.getMessage().contains("users.email")) {
+                output = "Cette adresse email existe dejà";
+            } else {
+                output = "Erreur : Problème lors de l'ajout de l'utilisateur.";
+                System.out.println(e.getMessage());
+            }
+        }
+        System.out.println(output);
+        return output;
+    }
+
 
 
 

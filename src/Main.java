@@ -19,10 +19,12 @@ public class Main {
         Boucles.fizzBuzz();
         */
 
+        //setup the database
         DataBaseManager dbManager = new DataBaseManager();
         dbManager.CreateTables();
-        dbManager.add_admins();
-
+        
+        User user_methods = new User();
+        user_methods.add_admins();
 
         //login & register page
         Form frame = new Form();
