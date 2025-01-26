@@ -519,7 +519,7 @@ public class Form extends JFrame {
     }
 
     private void EmployeeDashboard (Employee employee) {
-        JFrame frame = new JFrame("Admin Panel - IStore");
+        JFrame frame = new JFrame("Employee Panel - IStore");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null);
@@ -527,7 +527,7 @@ public class Form extends JFrame {
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(Color.LIGHT_GRAY);
 
-        JLabel titleLabel = new JLabel("Admin Panel - logged in as: " + employee.getUsername(), JLabel.CENTER);
+        JLabel titleLabel = new JLabel("Employee Panel - logged in as: " + employee.getUsername(), JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
         mainPanel.add(titleLabel, BorderLayout.NORTH);
