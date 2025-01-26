@@ -54,16 +54,12 @@ public class Admin extends User {
         try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(deleteFromTableSQL)) {
             statement.setInt(1, id);
             statement.executeUpdate();
-            dbmanager.Update_employee_after_store_delete(id);
+            dbmanager.reset_employee_after_store_delete(id);
             return "Magasin supprimé avec succès.";
         } catch (SQLException e) {
             return "Erreur : Problème lors de la suppression du magasin.";
         }
     }
-
-
-
-
 
     public Object[][] get_format_stores_data() {
         String query = "SELECT * FROM Stores";
@@ -93,6 +89,24 @@ public class Admin extends User {
         } catch (SQLException e) {
             System.err.println("Error while preparing statement or connecting to database: " + e.getMessage());
             return new Object[0][0]; // Return an empty array in case of an error
+        }
+    }
+
+    public String Assign_employee_to_store(int user_id, int store_id) {
+        String updateTableSQL = "UPDATE Users SET store_id = (?) WHERE id = (?)";
+        System.out.println("user"+user_id);
+        System.out.println("store:"+store_id);
+        try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(updateTableSQL)) {
+            statement.setInt(1, store_id);
+            statement.setInt(2, user_id);
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected == 0) {
+                return "Utilisateur ou magasin inexistant.";
+            }
+            return "Utilisateur "+ user_id +" affecté au magasin "+ store_id +" avec succès.";
+        } catch (SQLException ex) {
+            System.err.println("Détails de l'erreur : " + ex.getMessage()); // debug print
+            return "Erreur : Problème lors de l'attribution du magasin.";
         }
     }
 

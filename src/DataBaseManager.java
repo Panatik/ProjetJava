@@ -86,7 +86,7 @@ public class DataBaseManager {
         }
     }
 
-    public void Update_employee_after_store_delete(int id) {
+    public void reset_employee_after_store_delete(int id) {
         String updateTableSQL = "UPDATE Users SET store_id = 0 WHERE store_id=?";
         try (PreparedStatement statement = this.connection.prepareStatement(updateTableSQL)) {
             statement.setInt(1, id);

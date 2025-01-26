@@ -255,7 +255,6 @@ public class Form extends JFrame {
         JButton deleteInventoryItemButton = new JButton("Supprimer un item de l'inventaire");
         JButton updateUserButton = new JButton("Mettre à jour un utilisateur");
         JButton deleteUserButton = new JButton("Supprimer un compte utilisateur");
-        JButton manageWhitelistButton = new JButton("Gérer les emails whitelistés");
 
         buttonPanel.add(AddwhitelistUserButton);
         buttonPanel.add(DisplayEmployeesButton);
@@ -267,7 +266,6 @@ public class Form extends JFrame {
         buttonPanel.add(deleteInventoryItemButton);
         buttonPanel.add(updateUserButton);
         buttonPanel.add(deleteUserButton);
-        buttonPanel.add(manageWhitelistButton);
 
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
 
@@ -326,6 +324,16 @@ public class Form extends JFrame {
             String store_id_str = JOptionPane.showInputDialog("Enter the id of the store to delete");
             int store_id = Integer.parseInt(store_id_str);
             String output = admin.Delete_Store(store_id);
+            JOptionPane.showMessageDialog(frame, output);
+        });
+
+
+        assignEmployeeButton.addActionListener(e -> {
+            String user_id_str = JOptionPane.showInputDialog("Enter the id of the user to assign to a store");
+            int user_id = Integer.parseInt(user_id_str);
+            String store_id_str = JOptionPane.showInputDialog("Enter the id of the store to assign to");
+            int store_id = Integer.parseInt(store_id_str);
+            String output = admin.Assign_employee_to_store(user_id, store_id);
             JOptionPane.showMessageDialog(frame, output);
         });
         
