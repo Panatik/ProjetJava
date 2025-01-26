@@ -123,10 +123,11 @@ public class Form extends JFrame {
                     Admin admin = (Admin) currentUser;
                     admin.testdef();
                     frame.dispose();
-                    String output = admin.Add_employee_whitelist("test2@test.com");
-                    System.out.println(output);
                     Admindashboard(admin);
 
+                    //test
+                    //String output = admin.Add_employee_whitelist("test2@test.com");
+                    //System.out.println(output);
                 } else if (currentUser instanceof Employee) {
                     Employee employee = (Employee) currentUser;
                     employee.testdefemployee();
@@ -222,7 +223,7 @@ public class Form extends JFrame {
         });
     }
 
-    private void Admindashboard (User admin) {
+    private void Admindashboard (Admin admin) {
         JFrame frame = new JFrame("Admin Panel - IStore");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
@@ -240,9 +241,15 @@ public class Form extends JFrame {
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
 
-        JButton createUserButton = new JButton("ajouter employee a la whiteliste");
+        //done
+        JButton AddwhitelistUserButton = new JButton("ajouter employee a la whiteliste");
+        JButton DisplayEmployeesButton = new JButton("afficher tous les employees");
         JButton createStoreButton = new JButton("Créer un magasin");
+        JButton DisplayStores = new JButton("afficher tous les magasins");
         JButton deleteStoreButton = new JButton("Supprimer un magasin");
+
+
+        //todo
         JButton assignEmployeeButton = new JButton("Assigner des employés à un magasin");
         JButton createInventoryItemButton = new JButton("Créer un item dans l'inventaire");
         JButton deleteInventoryItemButton = new JButton("Supprimer un item de l'inventaire");
@@ -250,7 +257,9 @@ public class Form extends JFrame {
         JButton deleteUserButton = new JButton("Supprimer un compte utilisateur");
         JButton manageWhitelistButton = new JButton("Gérer les emails whitelistés");
 
-        buttonPanel.add(createUserButton);
+        buttonPanel.add(AddwhitelistUserButton);
+        buttonPanel.add(DisplayEmployeesButton);
+        buttonPanel.add(DisplayStores);
         buttonPanel.add(createStoreButton);
         buttonPanel.add(deleteStoreButton);
         buttonPanel.add(assignEmployeeButton);
@@ -264,6 +273,85 @@ public class Form extends JFrame {
 
         frame.add(mainPanel);
         frame.setVisible(true);
+
+
+        AddwhitelistUserButton.addActionListener(e -> {
+            String email = JOptionPane.showInputDialog("Enter the email of the employee to add:");
+            String output = admin.Add_employee_whitelist(email);
+            JOptionPane.showMessageDialog(frame, output);
+        });
+
+        DisplayEmployeesButton.addActionListener(e -> {
+            try {
+                // Retrieve user data from the admin class
+                Object[][] data = admin.get_format_users_data();
+                String[] columnNames = {"ID", "Email", "Pseudo", "Role", "Store_id"};
+                
+                DisplayJtable(data, columnNames);
+                
+            } catch (Exception ex) {
+                //ex.printStackTrace(); // debug print
+                JOptionPane.showMessageDialog(frame, 
+                    "Erreur lors de l'affichage des utilisateurs : " + ex.getMessage(), 
+                    "Erreur", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+
+        createStoreButton.addActionListener(e -> {
+            String store_name = JOptionPane.showInputDialog("Enter the name of the store:");
+            String output = admin.Create_store(store_name);
+            JOptionPane.showMessageDialog(frame, output);
+        });
+
+
+        DisplayStores.addActionListener(e -> {
+            try {
+                Object[][] data = admin.get_format_stores_data();
+                String[] columnNames = {"ID", "Nom du magasin"};
+                
+                DisplayJtable(data, columnNames);
+                
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(frame, 
+                    "Erreur lors de l'affichage des magasins : " + ex.getMessage(), 
+                    "Erreur", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        deleteStoreButton.addActionListener(e -> {
+            String store_id_str = JOptionPane.showInputDialog("Enter the id of the store to delete");
+            int store_id = Integer.parseInt(store_id_str);
+            String output = admin.Delete_Store(store_id);
+            JOptionPane.showMessageDialog(frame, output);
+        });
+        
+    }
+
+
+    public void DisplayJtable(Object[][] data, String[] columnNames) {
+        JTable table = new JTable(data, columnNames);
+                
+        // Customize table appearance (optional)
+        table.setRowHeight(25);
+        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+        table.setFont(new Font("Arial", Font.PLAIN, 14));
+
+        // Add table to JScrollPane for scrollability
+        JScrollPane scrollPane = new JScrollPane(table);
+        
+        // Create a new JFrame to display the table
+        JFrame tableFrame = new JFrame("Liste des utilisateurs (role: User)");
+        tableFrame.setLocationRelativeTo(null);
+        tableFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        tableFrame.setSize(600, 400);
+        tableFrame.add(scrollPane, BorderLayout.CENTER);
+        
+        // Make the frame visible
+        tableFrame.setVisible(true);
     }
 
 

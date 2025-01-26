@@ -36,15 +36,27 @@ public class DataBaseManager {
                 email varchar(100) not null unique,
                 pseudo varchar(20) not null,
                 password varchar(255) not null,
-                role enum('admin', 'user') not null default 'user'
+                role enum('admin', 'user') not null default 'user',
+                store_id int default null,
+                foreign key (store_id) references Stores(id)
             );
         """;
     
+        // SQL statement for creating the Employee_whitelist table
         String createEmployeeWhitelistTableSQL = """
             create table if not exists Employee_whitelist (
                 email varchar(100) not null unique
             );
         """;
+    
+        // SQL statement for creating the Stores table
+        String createStoresTableSQL = """
+            create table if not exists Stores (
+                id int auto_increment primary key,
+                store_name varchar(100) not null unique
+            );
+        """;
+
     
         try (Statement statement = this.connection.createStatement()) {
             // Création de la table Users
@@ -54,9 +66,33 @@ public class DataBaseManager {
             // Création de la table Employee_whitelist
             statement.executeUpdate(createEmployeeWhitelistTableSQL);
             System.out.println("Table Employee_whitelist créée avec succès.");
+
+            statement.executeUpdate(createStoresTableSQL);
+            System.out.println("Table Stores créée avec succès.");
+
+
         } catch (SQLException e) {
             System.err.println("Erreur : Problème lors de la création des tables.");
             e.printStackTrace();
+        }
+    }
+
+    public ResultSet executeQuery(String query) {
+        try (PreparedStatement statement = this.connection.prepareStatement(query)) {
+            return statement.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace(); //debug print
+            return null;
+        }
+    }
+
+    public void Update_employee_after_store_delete(int id) {
+        String updateTableSQL = "UPDATE Users SET store_id = 0 WHERE store_id=?";
+        try (PreparedStatement statement = this.connection.prepareStatement(updateTableSQL)) {
+            statement.setInt(1, id);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error while updating Users table: " + e.getMessage());
         }
     }
 

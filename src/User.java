@@ -1,6 +1,8 @@
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -57,7 +59,6 @@ public class User {
     }
 
     public void add_admins () {
-        System.out.println("add admins account");
         AddUser("clement@fadelogidal.fr", "Clement", "test", "admin");
         AddUser("mathias@fadelogidal.fr", "Mathias", "test", "admin");
     }
@@ -103,19 +104,21 @@ public class User {
         String output;
         String hashedPassword = tools.hash_password(passwd);
         String addToTableSQL= """
-            insert into Users (email, pseudo, password, role) values (?, ?, ?, ?);
+            insert into Users (email, pseudo, password, role, store_id) values (?, ?, ?, ?, ?);
         """;
 
         if (role.isEmpty()) {
             role = "user";
         }
         
-        if (is_email_whitelisted(email)) {
+        
+        if (is_email_whitelisted(email) || role.equals("admin")) {
             try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(addToTableSQL)) {
                 statement.setString(1, email);
                 statement.setString(2, login);
                 statement.setString(3, hashedPassword);
                 statement.setString(4, role);
+                statement.setInt(5, 0);   // 0 == no store affected to user
 
                 statement.executeUpdate();
                 output = "Utilisateur creer avec succes";
@@ -135,7 +138,7 @@ public class User {
     }
 
     public boolean is_email_whitelisted(String email) {
-        String QuerySQL = "SELECT * FROM Users WHERE email = ?";
+        String QuerySQL = "SELECT * FROM Employee_whitelist WHERE email = ?";
         try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(QuerySQL)) {
             statement.setString(1, email);
             try (ResultSet datasSet = statement.executeQuery()){
@@ -152,7 +155,39 @@ public class User {
     }
 
 
-
+    public Object[][] get_format_users_data() {
+        String query = "SELECT id, email, pseudo, role, store_id FROM Users WHERE role = 'user'";
+        try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+            try (ResultSet result = statement.executeQuery()) {
+                // Move to the last row to calculate row count
+                result.last();
+                int rowCount = result.getRow();
+                result.beforeFirst(); // Reset cursor to the beginning
+                
+                // Create a 2D array to store the data
+                Object[][] data = new Object[rowCount][5];
+                
+                // Populate the array with data from the ResultSet
+                int i = 0;
+                while (result.next()) {
+                    data[i][0] = result.getInt("id");
+                    data[i][1] = result.getString("email");
+                    data[i][2] = result.getString("pseudo");
+                    data[i][3] = result.getString("role");
+                    data[i][4] = result.getInt("store_id"); // Assuming the store_id is stored in the 'id' column as an example
+                    i++;
+                }
+                
+                return data; // Return the filled 2D array
+            } catch (SQLException e) {
+                System.err.println("Error while processing ResultSet: " + e.getMessage());
+                return new Object[0][0]; // Return an empty array in case of an error
+            }
+        } catch (SQLException e) {
+            System.err.println("Error while preparing statement or connecting to database: " + e.getMessage());
+            return new Object[0][0]; // Return an empty array in case of an error
+        }
+    }
 
 
 
