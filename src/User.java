@@ -12,6 +12,7 @@ public class User {
     private String password_hash;
     private String role;
     private int user_id;
+    private int store_id;
 
     protected final  DataBaseManager dbmanager; 
     protected final Tools tools;
@@ -22,12 +23,13 @@ public class User {
        tools = new Tools();
     }
 
-    public User(String email, String username, String password_hash, String role, int user_id) {
+    public User(String email, String username, String password_hash, String role, int user_id, int store_id) {
         this.email = email;
         this.username = username;
         this.password_hash = password_hash;
         this.role = role;
         this.user_id = user_id;
+        this.store_id = store_id;
     }
 
     public User() {}
@@ -50,6 +52,10 @@ public class User {
 
     public int getUser_id() {
         return user_id;
+    }
+
+    public int getStore_id() {
+        return store_id;
     }
 
     @Override
@@ -80,7 +86,8 @@ public class User {
                             datasSet.getString("pseudo"),
                             datasSet.getString("password"),
                             datasSet.getString("role"),
-                            datasSet.getInt("id")
+                            datasSet.getInt("id"),
+                            datasSet.getInt("store_id")
                         );
                     } else if (role.equals("user")) {
                         return new Employee(
@@ -88,7 +95,8 @@ public class User {
                             datasSet.getString("pseudo"),
                             datasSet.getString("password"),
                             datasSet.getString("role"),
-                            datasSet.getInt("id")
+                            datasSet.getInt("id"),
+                            datasSet.getInt("store_id")
                         );
                     }
                 }
@@ -155,19 +163,20 @@ public class User {
     }
 
 
-    public Object[][] get_format_users_data() {
-        String query = "SELECT id, email, pseudo, role, store_id FROM Users WHERE role = 'user'";
+    public Object[][] get_format_users_data(String role) {
+        String query = "";
+        if (role.equals("user")) {
+            query = "SELECT id, email, pseudo, role, store_id FROM Users WHERE role = 'user'";
+        } else if (role.equals("admin")) {
+            query = "SELECT id, email, pseudo, role, store_id FROM Users";
+        }
         try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             try (ResultSet result = statement.executeQuery()) {
                 // Move to the last row to calculate row count
                 result.last();
                 int rowCount = result.getRow();
                 result.beforeFirst(); // Reset cursor to the beginning
-                
-                // Create a 2D array to store the data
                 Object[][] data = new Object[rowCount][5];
-                
-                // Populate the array with data from the ResultSet
                 int i = 0;
                 while (result.next()) {
                     data[i][0] = result.getInt("id");
@@ -186,6 +195,89 @@ public class User {
         } catch (SQLException e) {
             System.err.println("Error while preparing statement or connecting to database: " + e.getMessage());
             return new Object[0][0]; // Return an empty array in case of an error
+        }
+    }
+
+    public Object[][] get_format_items_data(String role, int store_id) {
+        String query = "";
+    
+        if (role.equals("admin")) {
+            query = "SELECT * FROM items";
+        } else if (role.equals("user")) {
+            query = "SELECT * FROM items WHERE store_id = ?";
+        }
+    
+        try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+            if (role.equals("user")) {
+                statement.setInt(1, store_id);
+            }
+    
+            try (ResultSet result = statement.executeQuery()) {
+                result.last();
+                int rowCount = result.getRow();
+                result.beforeFirst(); // Reset cursor to the beginning
+    
+                Object[][] data = new Object[rowCount][5];
+                int i = 0;
+    
+                while (result.next()) {
+                    data[i][0] = result.getInt("id");
+                    data[i][1] = result.getString("item_name");
+                    data[i][2] = result.getFloat("item_price");
+                    data[i][3] = result.getInt("item_quantity");
+                    data[i][4] = result.getInt("store_id");
+                    i++;
+                }
+    
+                return data; // Return the filled 2D array
+            } catch (SQLException e) {
+                System.err.println("Error while processing ResultSet: " + e.getMessage());
+                return new Object[0][0]; // Return an empty array in case of an error
+            }
+    
+        } catch (SQLException e) {
+            System.err.println("Error while preparing statement or connecting to database: " + e.getMessage());
+            return new Object[0][0]; // Return an empty array in case of an error
+        }
+    }
+
+    public boolean is_user_id_valid(int id) {
+        String query = "select * from Users where id = ?";
+        try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(query)) {
+            statement.setInt(1, id);
+            try (ResultSet result = statement.executeQuery()) {
+                return result.next(); // Return true if a result exists, false otherwise
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error while checking user ID validity: " + ex.getMessage());
+            return false; 
+        }
+    }
+
+    public boolean is_store_id_valid(int id) {
+        String query = "select * from Stores where id = ?";
+        try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(query)) {
+            statement.setInt(1, id);
+            try (ResultSet result = statement.executeQuery()) {
+                return result.next(); // Return true if a result exists, false otherwise
+            }
+        } catch (SQLException e) {
+            System.err.println("Error while checking store ID validity: " + e.getMessage());
+            return false; 
+        }
+    }
+
+    public boolean is_item_id_valid(int item_id) {
+        String query = "select * from Items where id = ?";
+        try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(query)) {
+            // Assume the item_id is stored in the 'id' column as an example
+            statement.setInt(1, item_id);
+            try (ResultSet result = statement.executeQuery()) {
+                return result.next(); // Return true if a result exists, false otherwise
+            }
+        } catch (SQLException e) {
+            System.err.println("Error while checking item ID validity: " + e.getMessage());
+            return false; 
         }
     }
 

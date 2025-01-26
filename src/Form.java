@@ -249,24 +249,32 @@ public class Form extends JFrame {
         JButton DisplayStores = new JButton("afficher tous les magasins");
         JButton deleteStoreButton = new JButton("Supprimer un magasin");
         JButton assignEmployeeButton = new JButton("Assigner des employés à un magasin");
-
-
+        JButton deleteEmployeeButton = new JButton("supprimer un employee");
+        JButton updateUserButton = new JButton("Mettre à jour un utilisateur");
+        JButton DisplayInventoryItemsButton = new JButton("afficher tous les items de l'inventaire");
+        JButton updateInventoryItemButton = new JButton("Mettre à jour un item de l'inventaire");
+        
+        
         //todo
         JButton createInventoryItemButton = new JButton("Créer un item dans l'inventaire");
         JButton deleteInventoryItemButton = new JButton("Supprimer un item de l'inventaire");
-        JButton updateUserButton = new JButton("Mettre à jour un utilisateur");
-        JButton deleteUserButton = new JButton("Supprimer un compte utilisateur");
 
-        buttonPanel.add(AddwhitelistUserButton);
-        buttonPanel.add(DisplayEmployeesButton);
-        buttonPanel.add(DisplayStores);
-        buttonPanel.add(createStoreButton);
-        buttonPanel.add(deleteStoreButton);
-        buttonPanel.add(assignEmployeeButton);
+        buttonPanel.add(DisplayEmployeesButton); // done
+        buttonPanel.add(DisplayStores);  // done
+        buttonPanel.add(DisplayInventoryItemsButton); // done
+
+        buttonPanel.add(AddwhitelistUserButton);  // done
+        buttonPanel.add(assignEmployeeButton);  // done
+
+        buttonPanel.add(updateUserButton); // done
+        buttonPanel.add(updateInventoryItemButton); //done
+
+        buttonPanel.add(createStoreButton);  // done
         buttonPanel.add(createInventoryItemButton);
+
+        buttonPanel.add(deleteEmployeeButton);  // done
+        buttonPanel.add(deleteStoreButton);  // done
         buttonPanel.add(deleteInventoryItemButton);
-        buttonPanel.add(updateUserButton);
-        buttonPanel.add(deleteUserButton);
 
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
 
@@ -283,7 +291,7 @@ public class Form extends JFrame {
         DisplayEmployeesButton.addActionListener(e -> {
             try {
                 // Retrieve user data from the admin class
-                Object[][] data = admin.get_format_users_data();
+                Object[][] data = admin.get_format_users_data(admin.getRole());
                 String[] columnNames = {"ID", "Email", "Pseudo", "Role", "Store_id"};
                 
                 DisplayJtable(data, columnNames, "Users");
@@ -297,12 +305,82 @@ public class Form extends JFrame {
             }
         });
 
+        DisplayInventoryItemsButton.addActionListener(e -> {
+            try {
+                // Retrieve inventory data from the admin class
+                Object[][] data = admin.get_format_items_data(admin.getRole(), 0);
+                String[] columnNames = {"ID", "Name", "Price", "Quantity", "Store_id"};
+                
+                DisplayJtable(data, columnNames, "Inventory Items");
+                
+            } catch (Exception ex) {
+                //ex.printStackTrace(); // debug print
+                JOptionPane.showMessageDialog(frame, 
+                    "Erreur lors de l'affichage des items de l'inventaire : " + ex.getMessage(), 
+                    "Erreur", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
+
+        });
+
+        deleteEmployeeButton.addActionListener(e -> {
+            String user_id_str = JOptionPane.showInputDialog("Enter the id of the user to delete");
+            int user_id = Integer.parseInt(user_id_str);
+            if (user_methods.is_user_id_valid(user_id)) {
+                String output = admin.Delete_user(user_id);
+                JOptionPane.showMessageDialog(frame, output);
+            } else {
+                JOptionPane.showMessageDialog(frame, "Invalid user ID. Please enter a valid user ID.");
+            }
+        });
+
 
         createStoreButton.addActionListener(e -> {
             String store_name = JOptionPane.showInputDialog("Enter the name of the store:");
             String output = admin.Create_store(store_name);
             JOptionPane.showMessageDialog(frame, output);
         });
+
+        updateUserButton.addActionListener(e -> {
+            try {
+                int user_id = Integer.parseInt(JOptionPane.showInputDialog("Enter the ID of the user to update:"));
+                if (user_methods.is_user_id_valid(user_id)) {
+                    int field_index = Integer.parseInt(JOptionPane.showInputDialog("Select the field to update:\n1- Email\n2- Username\n3- Password"));
+                    String newValue = JOptionPane.showInputDialog("Enter the new value:");
+                    if (field_index >= 1 && field_index <= 3) {
+                        String output = admin.Update_user(user_id, field_index, newValue);
+                        JOptionPane.showMessageDialog(frame, output);
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Invalid field index. Please enter a number between 1 and 3.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Invalid user ID. Please enter a valid user ID.");
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace(); // debug print
+            }
+        });
+
+        updateInventoryItemButton.addActionListener(e -> {
+            try {
+                int item_id = Integer.parseInt(JOptionPane.showInputDialog("Enter the ID of the item to update:"));
+                if (user_methods.is_item_id_valid(item_id)) {
+                    int field_index = Integer.parseInt(JOptionPane.showInputDialog("Select the field to update:\n1- name\n2- price\n3- quantity\n4- store_id"));
+                    String newValue = JOptionPane.showInputDialog("Enter the new value:");
+                    if (field_index >= 1 && field_index <= 4) {
+                        String output = admin.update_item(item_id, field_index, newValue);
+                        JOptionPane.showMessageDialog(frame, output);
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Invalid field index. Please enter a number between 1 and 4.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Invalid item ID. Please enter a valid item ID.");
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace(); // debug print
+            }
+        });
+            
 
 
         DisplayStores.addActionListener(e -> {
@@ -324,18 +402,30 @@ public class Form extends JFrame {
         deleteStoreButton.addActionListener(e -> {
             String store_id_str = JOptionPane.showInputDialog("Enter the id of the store to delete");
             int store_id = Integer.parseInt(store_id_str);
-            String output = admin.Delete_Store(store_id);
-            JOptionPane.showMessageDialog(frame, output);
+            if (user_methods.is_store_id_valid(store_id)) {
+                String output = admin.Delete_Store(store_id);
+                JOptionPane.showMessageDialog(frame, output);
+            } else {
+                JOptionPane.showMessageDialog(frame, "Invalid store ID. Please enter a valid store ID.");
+            }
         });
 
 
         assignEmployeeButton.addActionListener(e -> {
             String user_id_str = JOptionPane.showInputDialog("Enter the id of the user to assign to a store");
             int user_id = Integer.parseInt(user_id_str);
-            String store_id_str = JOptionPane.showInputDialog("Enter the id of the store to assign to");
-            int store_id = Integer.parseInt(store_id_str);
-            String output = admin.Assign_employee_to_store(user_id, store_id);
-            JOptionPane.showMessageDialog(frame, output);
+            if (user_methods.is_user_id_valid(user_id)) {
+                String store_id_str = JOptionPane.showInputDialog("Enter the id of the store to assign to");
+                int store_id = Integer.parseInt(store_id_str);
+                if (user_methods.is_store_id_valid(store_id)) {
+                    String output = admin.Assign_employee_to_store(user_id, store_id);
+                    JOptionPane.showMessageDialog(frame, output);
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Invalid store ID. Please enter a valid store ID.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(frame, "Invalid user ID. Please enter a valid user ID.");
+            }
         });
         
     }

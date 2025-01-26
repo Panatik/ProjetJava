@@ -57,6 +57,19 @@ public class DataBaseManager {
             );
         """;
 
+        String createItemsTableSQL = """
+            create table if not exists items (
+                id int auto_increment primary key,
+                item_name varchar(100) not null unique,
+                item_price float not null check (item_price >= 0), 
+                item_quantity int not null check (item_quantity >= 0),
+                store_id int not null,
+                foreign key (store_id) references stores(id) on delete cascade
+            );
+        """;
+
+
+
     
         try (Statement statement = this.connection.createStatement()) {
             // Création de la table Users
@@ -70,6 +83,8 @@ public class DataBaseManager {
             statement.executeUpdate(createStoresTableSQL);
             System.out.println("Table Stores créée avec succès.");
 
+            statement.executeUpdate(createItemsTableSQL);
+            System.out.println("Table Items créée avec succès.");
 
         } catch (SQLException e) {
             System.err.println("Erreur : Problème lors de la création des tables.");
