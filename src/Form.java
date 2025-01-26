@@ -132,6 +132,8 @@ public class Form extends JFrame {
                 } else if (currentUser instanceof Employee) {
                     Employee employee = (Employee) currentUser;
                     employee.testdefemployee();
+                    frame.dispose();
+                    EmployeeDashboard(employee);
                 }
 
                 
@@ -514,6 +516,44 @@ public class Form extends JFrame {
             }
         });
         
+    }
+
+    private void EmployeeDashboard (Employee employee) {
+        JFrame frame = new JFrame("Admin Panel - IStore");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+        frame.setLocationRelativeTo(null);
+
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(Color.LIGHT_GRAY);
+
+        JLabel titleLabel = new JLabel("Admin Panel - logged in as: " + employee.getUsername(), JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+        mainPanel.add(titleLabel, BorderLayout.NORTH);
+
+        JPanel buttonPanel = new JPanel(new GridLayout(5, 2, 15, 15)); // Grid: 5 rows, 2 columns
+        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+
+        JButton DisplayusersButton = new JButton("Voir les informations des autres utilisateur");
+        JButton updateUserButton = new JButton("Mettre à jour mon compte");
+        JButton deleteUserButton = new JButton("Supprimer mon compte");
+        JButton viewStoresButton = new JButton("Accéder à mon magasins");
+        JButton viewInventoryButton = new JButton("Voir l'inventaire de mon magasins");
+        JButton updateItemQuantityButton = new JButton("Modifier la quantité d'un item");
+
+        buttonPanel.add(DisplayusersButton);
+        buttonPanel.add(updateUserButton);
+        buttonPanel.add(deleteUserButton);
+        buttonPanel.add(viewStoresButton);
+        buttonPanel.add(viewInventoryButton);
+        buttonPanel.add(updateItemQuantityButton);
+
+        mainPanel.add(buttonPanel, BorderLayout.CENTER);
+
+        frame.add(mainPanel);
+        frame.setVisible(true);
     }
 
 
