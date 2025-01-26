@@ -99,24 +99,30 @@ public class DataBaseManager {
         return output;
     }
 
-    public boolean VerifyLogin(String email, String passwd) {
-        boolean isGood = false;
-        String QuerySQL = "SELECT email, password FROM Users WHERE email = ?";
+    public User VerifyLogin(String email, String passwd) {
+        String QuerySQL = "SELECT * FROM Users WHERE email = ?";
 
         try (PreparedStatement statement = this.connection.prepareStatement(QuerySQL)) {
             statement.setString(1, email);
-            try (ResultSet isMatch = statement.executeQuery()){
-                //isMatch.next() permet d'aller à la ligne dans les résultats de la query (si la query retourne rien ça renvoie false)
+            try (ResultSet datasSet = statement.executeQuery()){
+                //datasSet.next() permet d'aller à la ligne dans les résultats de la query (si la query retourne rien ça renvoie false)
                 //BCrypt.machin ça permet de voir si le mdp et sa version haché correspondent ou pas
-                if (isMatch.next() && BCrypt.checkpw(passwd, isMatch.getString("password"))){
-                    isGood = true;
+                if (datasSet.next() && BCrypt.checkpw(passwd, datasSet.getString("password"))){
+                    return new User(
+                        datasSet.getString("email"),
+                        datasSet.getString("pseudo"),
+                        datasSet.getString("password"),
+                        datasSet.getString("role"),
+                        datasSet.getInt("id")
+                    );
                 } 
             }
         } catch (SQLException e) {
             System.err.println("Erreur : Problème lors de la vérification du login");
-            e.printStackTrace();
+            //e.printStackTrace(); debug print
         }
-
-        return isGood;
+        return null;
     }
+
+
 }

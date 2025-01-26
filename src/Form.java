@@ -37,13 +37,15 @@ public class Form extends JFrame {
             errorLabel.setText(output);
     }
 
-    public void verify_email(String email) {
+    public boolean  verify_email(String email) {
         if (!dbmanager.verify_email_format(email)) {
             setErrorLabel("Email invalide");
             System.out.println("Email format not valid");
-            return;
+            return false;
         }
+        return true;
     }
+
 
 
     public void LoginFrame(){
@@ -100,17 +102,23 @@ public class Form extends JFrame {
         loginButton.addActionListener(e -> {
             String email = usernameField.getText();
             String password = String.valueOf(passwordField.getPassword());
-
+        
             if (email.isEmpty() || password.isEmpty()) {
                 setErrorLabel("Username or Password missing");
+                return; 
+            }
+            if (!verify_email(email)) {
+                setErrorLabel("Email invalide");
+                return;
+            }
+            User user = dbmanager.VerifyLogin(email, password);
+
+            if (user != null) {
+                setErrorLabel("Connexion réussie");
+                currentUser = user;
+                System.out.println(currentUser.toString());
             } else {
-                verify_email(email);
-                if (dbmanager.VerifyLogin(email, password)){
-                    setErrorLabel("Connection réussie");
-                    currentUser = new User(email);
-                } else {
-                    setErrorLabel("Utilisateur inconnu");
-                }
+                setErrorLabel("Utilisateur inconnu");
             }
         });
 
@@ -118,9 +126,8 @@ public class Form extends JFrame {
             frame.dispose();
             RegisterFrame();
         });
+
     }
-
-
 
 
     public void RegisterFrame(){
@@ -173,17 +180,22 @@ public class Form extends JFrame {
         frameRegister.add(panel);
         frameRegister.setVisible(true);
 
-
         registerButton.addActionListener(e -> {
-            String email = new String(emailField.getText());
-            String login = new String(usernameField.getText());
-            String passwd = new String(passwordField.getPassword());
-
-            verify_email(email);
-            String output = dbmanager.AddUser(email, login, passwd, "");
+            String email = emailField.getText();
+            String usrname = usernameField.getText();
+            String passwd = String.valueOf(passwordField.getPassword());
+        
+            // Vérifier l'email avant de continuer
+            if (!verify_email(email)) {
+                setErrorLabel("Email invalide");
+                return; // Arrêter l'exécution si l'email est invalide
+            }
+        
+            // Ajouter l'utilisateur dans la base de données
+            String output = dbmanager.AddUser(email, usrname, passwd, "");
             setErrorLabel(output);
-
-            if (output.equals("Utilisateur creer avec succes")) {
+        
+            if (output.equals("Utilisateur créé avec succès")) {
                 Timer timer = new Timer(1000, event -> {
                     frameRegister.dispose();
                     LoginFrame();
@@ -191,7 +203,6 @@ public class Form extends JFrame {
                 timer.setRepeats(false); // On exécute le Timer une seule fois
                 timer.start();
             }
-
         });
     }
 }
