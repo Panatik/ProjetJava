@@ -98,21 +98,21 @@ public class Admin extends User {
         }
     }
 
-    public Object[][] get_format_stores_data() {
-        String query = "select * from Stores";
+    public Object[][] get_format_employee_whitelist_data() {
+        String query = "select * from Employee_whitelist";
         try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             try (ResultSet result = statement.executeQuery()) {
-                // Move to the last row to calculate row count
+
                 result.last();
                 int rowCount = result.getRow();
-                result.beforeFirst(); // Reset cursor to the beginning
+                result.beforeFirst(); 
                 
                 Object[][] data = new Object[rowCount][2];
                 
                 int i = 0;
                 while (result.next()) {
                     data[i][0] = result.getInt("id");
-                    data[i][1] = result.getString("store_name");
+                    data[i][1] = result.getString("email");
                     i++;
                 }
                 
@@ -142,24 +142,6 @@ public class Admin extends User {
         } catch (SQLException ex) {
             System.err.println("Détails de l'erreur : " + ex.getMessage()); // debug print
             return "Erreur : Problème lors de l'attribution du magasin.";
-        }
-    }
-
-    public String Update_user(int user_id, int field_index, String new_value) {
-        String[] fields = {"email", "pseudo", "password"};
-        String selected_field = fields[field_index - 1];
-        if (selected_field.equals("password")) {
-            new_value = tools.hash_password(new_value);
-        }
-        String updateTableSQL = "update Users set " + selected_field + " = (?) where id = (?)";
-        try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(updateTableSQL)) {
-            statement.setString(1, new_value);
-            statement.setInt(2, user_id);
-            int rowsAffected = statement.executeUpdate();
-            return "Utilisateur "+ user_id +" modifié avec succès.";
-        } catch (SQLException ex) { 
-            System.err.println("Détails de l'erreur : " + ex.getMessage()); // debug print
-            return "Erreur : Problème lors de la modification de l'utilisateur.";
         }
     }
 

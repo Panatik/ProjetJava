@@ -162,13 +162,31 @@ public class User {
         return false;
     }
 
+    public String Update_user(int user_id, int field_index, String new_value) {
+        String[] fields = {"email", "pseudo", "password"};
+        String selected_field = fields[field_index - 1];
+        if (selected_field.equals("password")) {
+            new_value = tools.hash_password(new_value);
+        }
+        String updateTableSQL = "update Users set " + selected_field + " = (?) where id = (?)";
+        try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(updateTableSQL)) {
+            statement.setString(1, new_value);
+            statement.setInt(2, user_id);
+            int rowsAffected = statement.executeUpdate();
+            return "Utilisateur "+ user_id +" modifié avec succès.";
+        } catch (SQLException ex) { 
+            System.err.println("Détails de l'erreur : " + ex.getMessage()); // debug print
+            return "Erreur : Problème lors de la modification de l'utilisateur.";
+        }
+    }
+
 
     public Object[][] get_format_users_data(String role) {
         String query = "";
         if (role.equals("user")) {
-            query = "SELECT id, email, pseudo, role, store_id FROM Users WHERE role = 'user'";
+            query = "select id, email, pseudo, role, store_id from Users where role = 'user'";
         } else if (role.equals("admin")) {
-            query = "SELECT id, email, pseudo, role, store_id FROM Users";
+            query = "select id, email, pseudo, role, store_id from Users";
         }
         try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             try (ResultSet result = statement.executeQuery()) {
@@ -198,20 +216,17 @@ public class User {
         }
     }
 
-    public Object[][] get_format_items_data(String role, int store_id) {
+    public Object[][] get_format_items_data(User user) {
         String query = "";
-    
-        if (role.equals("admin")) {
+        if (user instanceof Admin) {
             query = "SELECT * FROM items";
-        } else if (role.equals("user")) {
+        } else if (user instanceof Employee) {
             query = "SELECT * FROM items WHERE store_id = ?";
         }
-    
         try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
-            if (role.equals("user")) {
-                statement.setInt(1, store_id);
+            if (user instanceof Employee) {
+                statement.setInt(1, user.getStore_id());
             }
-    
             try (ResultSet result = statement.executeQuery()) {
                 result.last();
                 int rowCount = result.getRow();
@@ -235,6 +250,43 @@ public class User {
                 return new Object[0][0]; // Return an empty array in case of an error
             }
     
+        } catch (SQLException e) {
+            System.err.println("Error while preparing statement or connecting to database: " + e.getMessage());
+            return new Object[0][0]; // Return an empty array in case of an error
+        }
+    }
+
+    public Object[][] get_format_stores_data(User user) {
+        String query = "";
+        if (user instanceof Employee) {
+            query = "select * from Stores where id = ?";
+        }else if (user instanceof Admin) {
+            query = "select * from Stores";
+        }
+        try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+            if (user instanceof Employee) {
+                statement.setInt(1, user.getStore_id());
+            }
+            try (ResultSet result = statement.executeQuery()) {
+
+                result.last();
+                int rowCount = result.getRow();
+                result.beforeFirst(); 
+                
+                Object[][] data = new Object[rowCount][2];
+                
+                int i = 0;
+                while (result.next()) {
+                    data[i][0] = result.getInt("id");
+                    data[i][1] = result.getString("store_name");
+                    i++;
+                }
+                
+                return data; // Return the filled 2D array
+            } catch (SQLException e) {
+                System.err.println("Error while processing ResultSet: " + e.getMessage());
+                return new Object[0][0]; // Return an empty array in case of an error
+            }
         } catch (SQLException e) {
             System.err.println("Error while preparing statement or connecting to database: " + e.getMessage());
             return new Object[0][0]; // Return an empty array in case of an error

@@ -312,6 +312,15 @@ public class Form extends JFrame {
         UserDisplayTitle.setFont(new Font("Arial", Font.BOLD, 20));
         UserDisplayTitle.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
         userDisplayPanel.add(UserDisplayTitle, BorderLayout.NORTH);
+
+
+        // test display whtelist // temp
+        //JLabel WhitelistDisplayTitle = new JLabel("Employee Whitelist Table", JLabel.CENTER);
+        //WhitelistDisplayTitle.setFont(new Font("Arial", Font.BOLD, 20));
+        //WhitelistDisplayTitle.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+        //userDisplayPanel.add(WhitelistDisplayTitle, BorderLayout.NORTH);
+
+
         //MAGASIN TITLE DISPLAY PANEL
         JLabel MagasinDisplayTitle = new JLabel("Stores Table", JLabel.CENTER);
         MagasinDisplayTitle.setFont(new Font("Arial", Font.BOLD, 20));
@@ -525,28 +534,145 @@ public class Form extends JFrame {
 
         JButton DisplayusersButton = new JButton("Voir les informations des autres utilisateur");
         JButton updateUserButton = new JButton("Mettre à jour mon compte");
-        JButton deleteUserButton = new JButton("Supprimer mon compte");
-        JButton viewStoresButton = new JButton("Accéder à mon magasins");
-        JButton viewInventoryButton = new JButton("Voir l'inventaire de mon magasins");
-        JButton updateItemQuantityButton = new JButton("Modifier la quantité d'un item");
+        JButton deleteUserButton = new JButton("Supprimer mon compte et me deconnecter");
+        JButton DisplayStoresButton = new JButton("Acceder à mon magasins");
+        JButton DisplayInventoryButton = new JButton("Voir l'inventaire de mon magasins");
+        JButton updateItemQuantityButton = new JButton("Modifier la quantite d'un item");
 
         buttonPanel.add(DisplayusersButton);
         buttonPanel.add(updateUserButton);
         buttonPanel.add(deleteUserButton);
-        buttonPanel.add(viewStoresButton);
-        buttonPanel.add(viewInventoryButton);
+        buttonPanel.add(DisplayStoresButton);
+        buttonPanel.add(DisplayInventoryButton);
         buttonPanel.add(updateItemQuantityButton);
 
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
 
         frame.add(mainPanel);
         frame.setVisible(true);
+
+        updateUserButton.addActionListener(e -> {
+            try {
+                int field_index = Integer.parseInt(JOptionPane.showInputDialog("Select the field to update:\n1- Email: " +employee.getEmail()+ "\n2- Username: " +employee.getUsername()+ "\n3- Password"));
+                String newValue = JOptionPane.showInputDialog("Enter the new value:");
+                if (field_index >= 1 && field_index <= 3) {
+                    String output = employee.Update_user(employee.getUser_id(), field_index, newValue);
+                    JOptionPane.showMessageDialog(frame, output);
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Invalid field index. Please enter a number between 1 and 3.");
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace(); // debug print
+            }
+        });
+
+        deleteUserButton.addActionListener(e -> {
+            String output = employee.delete_self(employee.getUser_id(), employee.getEmail());
+            JOptionPane.showMessageDialog(frame, output);
+            frame.dispose();
+            LoginFrame();
+        });
+
+
+
+        //temporary buttons // test buttons
+        DisplayusersButton.addActionListener(e -> {
+            JPanel testpanel = new JPanel();
+            Display_Employees_user_temp(employee, testpanel, frame);
+        });
+
+        DisplayStoresButton.addActionListener(e -> {
+            JPanel testpanel = new JPanel();
+            Display_Store_user_temp(employee, testpanel, frame);
+        });
+
+        DisplayInventoryButton.addActionListener(e -> {
+            JPanel testpanel = new JPanel();
+            Display_Inventory_user_store_temp(employee, testpanel, frame);
+        });
+
+        updateItemQuantityButton.addActionListener(e -> {
+            try {
+                int item_id = Integer.parseInt(JOptionPane.showInputDialog("Enter the ID of the item to update:"));
+                if (user_methods.is_item_id_valid(item_id)) {
+                    int newValue = Integer.parseInt(JOptionPane.showInputDialog("Enter the new value:"));
+                        String output = employee.update_item_quantity(item_id, newValue);
+                        JOptionPane.showMessageDialog(frame, output);
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Invalid field index. Please enter a number between 1 and 4.", "Invalid", JOptionPane.INFORMATION_MESSAGE);
+                    }
+            } catch (Exception ex) {
+                ex.printStackTrace(); // debug print
+            }
+        });
     }
 
 
+    //temporary methods to do
+    
+    public void Display_Employees_user_temp(Employee employee, JPanel EmployeeDisplayPanel, JFrame frame) {
+        try {
+            Object[][] data = employee.get_format_users_data(employee.getRole());
+            String[] columnNames = {"ID", "Username", "Email", "Role", "Store_id"};
+            // Display the table in a JScrollPane
+            System.out.println("Display_Employees_user_temp here");
+
+
+
+
+        } catch (Exception ex) {
+            //ex.printStackTrace(); // debug print
+            JOptionPane.showMessageDialog(frame,
+                    "Erreur lors de l'affichage des utilisateurs : " + ex.getMessage(),
+                    "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    public void Display_Store_user_temp(Employee employee, JPanel EmployeeDisplayPanel, JFrame frame) {
+        try {
+            Object[][] data = employee.get_format_stores_data(employee);
+            String[] columnNames = {"ID", "Store name"};
+            // Display the table in a JScrollPane
+            System.out.println("Display_Store_user_temp here");
+
+
+
+
+        } catch (Exception ex) {
+            //ex.printStackTrace(); // debug print
+            JOptionPane.showMessageDialog(frame,
+                    "Erreur lors de l'affichage des utilisateurs : " + ex.getMessage(),
+                    "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void Display_Inventory_user_store_temp (Employee employee, JPanel EmployeeDisplayPanel, JFrame frame) {
+        try {
+            Object[][] data = employee.get_format_stores_data(employee);
+            String[] columnNames = {"ID", "Name", "Price", "Quantity", "Store_id"};
+            // Display the table in a JScrollPane
+            System.out.println("Display_inventory_user_store_temp here");
+
+
+
+
+        } catch (Exception ex) {
+            //ex.printStackTrace(); // debug print
+            JOptionPane.showMessageDialog(frame,
+                    "Erreur lors de l'affichage des utilisateurs : " + ex.getMessage(),
+                    "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+
+
+    
+
     public JScrollPane DisplayJtable(Object[][] data, String[] columnNames, String title) {
         JTable table = new JTable(data, columnNames);
-                
+
         // Customize table appearance (optional)
         table.setRowHeight(25);
         table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
@@ -557,10 +683,11 @@ public class Form extends JFrame {
         return scrollPane;
     }
 
+
     public void DisplayInventoryPanelMethod(Admin admin, JPanel inventoryDisplayPanel, JFrame frame){
         try {
             // Retrieve inventory data from the admin class
-            Object[][] data = admin.get_format_items_data(admin.getRole(), 0);
+            Object[][] data = admin.get_format_items_data(admin);
             String[] columnNames = {"ID", "Name", "Price", "Quantity", "Store_id"};
 
             //DisplayJtable(data, columnNames, "Inventory Items");
@@ -580,11 +707,21 @@ public class Form extends JFrame {
     public void DisplayUserPanelMethod(Admin admin, JPanel userDisplayPanel, JFrame frame){
         try {
             // Retrieve user data from the admin class
-            Object[][] data = admin.get_format_users_data(admin.getRole());
-            String[] columnNames = {"ID", "Email", "Pseudo", "Role", "Store_id"};
+            Object[][] users_data = admin.get_format_users_data(admin.getRole());
+            String[] columnNames_users = {"ID", "Email", "Pseudo", "Role", "Store_id"};
+
+            // Retrieve white list data from the admin class
+            Object[][] whitelist_data = admin.get_format_employee_whitelist_data();
+            String[] columnNames_whitelist = {"ID", "Email"};
 
             userDisplayPanel.removeAll();
-            userDisplayPanel.add(DisplayJtable(data, columnNames, "Users"));
+            userDisplayPanel.add(DisplayJtable(users_data, columnNames_users, "Users"));
+
+
+            //afficher la table whitelist
+            //userDisplayPanel.add(DisplayJtable(whitelist_data, columnNames_whitelist, "Employee WhiteList"));
+            
+
             userDisplayPanel.revalidate();
 
         } catch (Exception ex) {
@@ -598,7 +735,7 @@ public class Form extends JFrame {
 
     public void DisplayMagasinPanelMethod(Admin admin, JPanel magasinDisplayPanel, JFrame frame){
         try {
-            Object[][] data = admin.get_format_stores_data();
+            Object[][] data = admin.get_format_stores_data(admin);
             String[] columnNames = {"ID", "Nom du magasin"};
 
             magasinDisplayPanel.removeAll();
