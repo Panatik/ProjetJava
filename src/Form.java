@@ -3,9 +3,7 @@ import javax.swing.*;
 
 public class Form extends JFrame {
     private User currentUser;
-    
     private JLabel errorLabel;
-    
     private final Tools tools;
     private final User user_methods;
     
@@ -125,18 +123,12 @@ public class Form extends JFrame {
                     admin.testdef();
                     frame.dispose();
                     Admindashboard(admin);
-
-                    //test
-                    //String output = admin.Add_employee_whitelist("test2@test.com");
-                    //System.out.println(output);
                 } else if (currentUser instanceof Employee) {
                     Employee employee = (Employee) currentUser;
                     employee.testdefemployee();
                     frame.dispose();
                     EmployeeDashboard(employee);
                 }
-
-                
             } else {
                 setErrorLabel("Utilisateur inconnu");
             }
@@ -572,7 +564,7 @@ public class Form extends JFrame {
             frame.dispose();
             LoginFrame();
         });
-        
+
         updateItemQuantityButton.addActionListener(e -> {
             try {
                 int item_id = Integer.parseInt(JOptionPane.showInputDialog("Enter the ID of the item to update:"));

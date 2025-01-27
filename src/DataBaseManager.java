@@ -5,7 +5,6 @@ public class DataBaseManager {
     private static final String BDD = "bd_java"; // Nom de la base de données
     private static final String LOGIN = "root"; // Nom d'utilisateur de la base de données
     private static final String URL = "jdbc:mysql://localhost:3306/" + BDD; // URL de connexion
-    private Tools tools;
 
     private Connection connection;
 
@@ -22,7 +21,6 @@ public class DataBaseManager {
             System.err.println("Erreur : Problème de connexion à la base de données.");
             e.printStackTrace();
         }
-        tools = new Tools();
     }
 
     public Connection getConnection() {
