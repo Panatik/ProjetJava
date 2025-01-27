@@ -572,8 +572,21 @@ public class Form extends JFrame {
             frame.dispose();
             LoginFrame();
         });
-
-
+        
+        updateItemQuantityButton.addActionListener(e -> {
+            try {
+                int item_id = Integer.parseInt(JOptionPane.showInputDialog("Enter the ID of the item to update:"));
+                if (user_methods.is_item_id_valid(item_id)) {
+                    int newValue = Integer.parseInt(JOptionPane.showInputDialog("Enter the new value:"));
+                        String output = employee.update_item_quantity(item_id, newValue);
+                        JOptionPane.showMessageDialog(frame, output);
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Invalid field index. Please enter a number between 1 and 4.", "Invalid", JOptionPane.INFORMATION_MESSAGE);
+                    }
+            } catch (Exception ex) {
+                ex.printStackTrace(); // debug print
+            }
+        });
 
         //temporary buttons // test buttons
         DisplayusersButton.addActionListener(e -> {
@@ -591,20 +604,7 @@ public class Form extends JFrame {
             Display_Inventory_user_store_temp(employee, testpanel, frame);
         });
 
-        updateItemQuantityButton.addActionListener(e -> {
-            try {
-                int item_id = Integer.parseInt(JOptionPane.showInputDialog("Enter the ID of the item to update:"));
-                if (user_methods.is_item_id_valid(item_id)) {
-                    int newValue = Integer.parseInt(JOptionPane.showInputDialog("Enter the new value:"));
-                        String output = employee.update_item_quantity(item_id, newValue);
-                        JOptionPane.showMessageDialog(frame, output);
-                    } else {
-                        JOptionPane.showMessageDialog(frame, "Invalid field index. Please enter a number between 1 and 4.", "Invalid", JOptionPane.INFORMATION_MESSAGE);
-                    }
-            } catch (Exception ex) {
-                ex.printStackTrace(); // debug print
-            }
-        });
+
     }
 
 
