@@ -1,10 +1,15 @@
+package Users;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-//import java.util.ArrayList;
-//import java.util.List;
+
+
+import DatabaseTools.Tools;
+import DatabaseTools.DataBaseManager;
 
 import org.mindrot.jbcrypt.BCrypt;
+
 
 public class User {
     private String email;

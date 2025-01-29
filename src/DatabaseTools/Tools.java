@@ -1,3 +1,5 @@
+package DatabaseTools;
+
 import org.mindrot.jbcrypt.BCrypt;
 
 public class Tools {

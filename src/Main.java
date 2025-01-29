@@ -1,3 +1,6 @@
+import DatabaseTools.*;
+import Interfaces.*;
+import Users.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -26,7 +29,6 @@ public class Main {
         User user_methods = new User();
         user_methods.add_admins();  
 
-        //login & register page
-        Form frame = new Form();
+        LoginFrame frame = new LoginFrame();
     }
 }

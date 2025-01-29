@@ -1,5 +1,7 @@
+package DatabaseTools;
+
 import java.sql.*;
-import org.mindrot.jbcrypt.BCrypt;
+//import org.mindrot.jbcrypt.BCrypt;
 
 public class DataBaseManager {
     private static final String BDD = "bd_java"; // Nom de la base de données
