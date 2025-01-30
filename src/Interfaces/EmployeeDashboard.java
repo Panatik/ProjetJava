@@ -15,13 +15,19 @@ public class EmployeeDashboard extends Form {
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setLocationRelativeTo(null);
 
+        //main panel
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(Color.LIGHT_GRAY);
 
+        //top panel
+        JPanel TopPanel = new JPanel(new BorderLayout());
+        TopPanel.setBackground(Color.LIGHT_GRAY);
+
+        //titre
         JLabel titleLabel = new JLabel("Employee Panel - logged in as: " + employee.getUsername(), JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
-        mainPanel.add(titleLabel, BorderLayout.NORTH);
+        TopPanel.add(titleLabel, BorderLayout.CENTER);
 
         //menu bar
         JMenuBar menu = new JMenuBar();
@@ -33,25 +39,37 @@ public class EmployeeDashboard extends Form {
         menu.add(FirstButton);
         frame.setJMenuBar(menu);
 
+        mainPanel.add(TopPanel, BorderLayout.NORTH);
+
+        JPanel DisplayPanel = new JPanel(new BorderLayout());
         JPanel buttonPanel = new JPanel(new GridLayout(5, 2, 15, 15)); // Grid: 5 rows, 2 columns
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
 
-        JButton DisplayusersButton = new JButton("Voir les informations des autres utilisateur");
+        //JButton DisplayusersButton = new JButton("Voir les informations des autres utilisateur");
         JButton updateUserButton = new JButton("Mettre à jour mon compte");
         JButton deleteUserButton = new JButton("Supprimer mon compte et me deconnecter");
         JButton DisplayStoresButton = new JButton("Acceder à mon magasins");
-        JButton DisplayInventoryButton = new JButton("Voir l'inventaire de mon magasins");
         JButton updateItemQuantityButton = new JButton("Modifier la quantite d'un item");
 
-        buttonPanel.add(DisplayusersButton);
+        //buttonPanel.add(DisplayusersButton);
         buttonPanel.add(updateUserButton);
         buttonPanel.add(deleteUserButton);
         buttonPanel.add(DisplayStoresButton);
-        buttonPanel.add(DisplayInventoryButton);
         buttonPanel.add(updateItemQuantityButton);
 
-        mainPanel.add(buttonPanel, BorderLayout.CENTER);
+        //display store's inventory
+        //Display_Employees_user_temp(employee, DisplayPanel, frame);
+        Display_Inventory_user_store_temp(employee, DisplayPanel, frame);
+
+        //USER TITLE DISPLAY PANEL
+        JLabel UserDisplayTitle = new JLabel("Stores: " + employee.get_store_name(employee), JLabel.CENTER);
+        UserDisplayTitle.setFont(new Font("Arial", Font.BOLD, 20));
+        UserDisplayTitle.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+        DisplayPanel.add(UserDisplayTitle, BorderLayout.NORTH);
+
+        mainPanel.add(buttonPanel);
+        mainPanel.add(DisplayPanel, BorderLayout.EAST);
 
         frame.add(mainPanel);
         frame.setVisible(true);
@@ -104,19 +122,14 @@ public class EmployeeDashboard extends Form {
         });
 
         //temporary buttons // test buttons
-        DisplayusersButton.addActionListener(e -> {
-            JPanel testpanel = new JPanel();
-            Display_Employees_user_temp(employee, testpanel, frame);
-        });
-
-        DisplayStoresButton.addActionListener(e -> {
-            JPanel testpanel = new JPanel();
-            Display_Store_user_temp(employee, testpanel, frame);
-        });
-
-        DisplayInventoryButton.addActionListener(e -> {
-            JPanel testpanel = new JPanel();
-            Display_Inventory_user_store_temp(employee, testpanel, frame);
-        });
+        //DisplayusersButton.addActionListener(e -> {
+        //    JPanel testpanel = new JPanel();
+        //    Display_Employees_user_temp(employee, testpanel, frame);
+        //});
+//
+        //DisplayStoresButton.addActionListener(e -> {
+        //    JPanel testpanel = new JPanel();
+        //    Display_Store_user_temp(employee, testpanel, frame);
+        //});
     }
 }

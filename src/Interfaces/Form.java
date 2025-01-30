@@ -51,7 +51,7 @@ public class Form extends JFrame {
         return true;
     }
 
-    public JScrollPane DisplayJtable(Object[][] data, String[] columnNames, String title) {
+    public JScrollPane DisplayJtable(Object[][] data, String[] columnNames) {
         JTable table = new JTable(data, columnNames);
 
         // Customize table appearance (optional)
@@ -71,32 +71,22 @@ public class Form extends JFrame {
 
     //temporary methods to do
     // Employee methods
-    public void Display_Employees_user_temp(Employee employee, JPanel EmployeeDisplayPanel, JFrame frame) {
+    public void Display_Employees_user_temp(Employee employee, JPanel DisplayPanel, JFrame frame) {
         try {
             Object[][] data = employee.get_format_users_data(employee.getRole());
             String[] columnNames = {"ID", "Username", "Email", "Role", "Store_id"};
             // Display the table in a JScrollPane
-            System.out.println("Display_Employees_user_temp here");
+            //System.out.println("Display_Employees_user_temp here");
 
+            //USER TITLE DISPLAY PANEL
+            JLabel UserDisplayTitle = new JLabel("Stores: " + employee.get_store_name(employee), JLabel.CENTER);
+            UserDisplayTitle.setFont(new Font("Arial", Font.BOLD, 20));
+            UserDisplayTitle.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
 
-
-
-        } catch (Exception ex) {
-            //ex.printStackTrace(); // debug print
-            JOptionPane.showMessageDialog(frame,
-                    "Erreur lors de l'affichage des utilisateurs : " + ex.getMessage(),
-                    "Erreur",
-                    JOptionPane.ERROR_MESSAGE);
-        }
-    }
-    public void Display_Store_user_temp(Employee employee, JPanel EmployeeDisplayPanel, JFrame frame) {
-        try {
-            Object[][] data = employee.get_format_stores_data(employee);
-            String[] columnNames = {"ID", "Store name"};
-            // Display the table in a JScrollPane
-            System.out.println("Display_Store_user_temp here");
-
-
+            DisplayPanel.removeAll();
+            DisplayPanel.add(UserDisplayTitle, BorderLayout.NORTH);
+            DisplayPanel.add(DisplayJtable(data, columnNames), BorderLayout.SOUTH);
+            DisplayPanel.revalidate();
 
 
         } catch (Exception ex) {
@@ -108,14 +98,26 @@ public class Form extends JFrame {
         }
     }
 
-    public void Display_Inventory_user_store_temp (Employee employee, JPanel EmployeeDisplayPanel, JFrame frame) {
+    public void Display_Inventory_user_store_temp (Employee employee, JPanel DisplayPanel, JFrame frame) {
         try {
-            Object[][] data = employee.get_format_stores_data(employee);
+            Object[][] data = employee.get_format_items_data(employee);
             String[] columnNames = {"ID", "Name", "Price", "Quantity", "Store_id"};
+
+            Object[][] data2 = employee.get_format_users_data(employee.getRole());
+            String[] columnNames2 = {"ID", "Username", "Email", "Role", "Store_id"};
             // Display the table in a JScrollPane
-            System.out.println("Display_inventory_user_store_temp here");
+            //System.out.println("Display_inventory_user_store_temp here");
 
+            //USER TITLE DISPLAY PANEL
+            JLabel UserDisplayTitle = new JLabel("Stores: " + employee.get_store_name(employee), JLabel.CENTER);
+            UserDisplayTitle.setFont(new Font("Arial", Font.BOLD, 20));
+            UserDisplayTitle.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
 
+            DisplayPanel.removeAll();
+            DisplayPanel.add(UserDisplayTitle, BorderLayout.NORTH);
+            DisplayPanel.add(DisplayJtable(data, columnNames), BorderLayout.CENTER);
+            DisplayPanel.add(DisplayJtable(data2, columnNames2), BorderLayout.SOUTH);
+            DisplayPanel.revalidate();
 
 
         } catch (Exception ex) {
@@ -139,9 +141,14 @@ public class Form extends JFrame {
             Object[][] data = admin.get_format_items_data(admin);
             String[] columnNames = {"ID", "Name", "Price", "Quantity", "Store_id"};
 
-            //DisplayJtable(data, columnNames, "Inventory Items");
+            //INVENTORY TITLE DISPLAY PANEL
+            JLabel InventoryDisplayTitle = new JLabel("Inventory Table", JLabel.CENTER);
+            InventoryDisplayTitle.setFont(new Font("Arial", Font.BOLD, 20));
+            InventoryDisplayTitle.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+
             inventoryDisplayPanel.removeAll();
-            inventoryDisplayPanel.add(DisplayJtable(data, columnNames, "Inventory Items"));
+            inventoryDisplayPanel.add(InventoryDisplayTitle, BorderLayout.NORTH);
+            inventoryDisplayPanel.add(DisplayJtable(data, columnNames));
             inventoryDisplayPanel.revalidate();
 
         } catch (Exception ex) {
@@ -170,14 +177,9 @@ public class Form extends JFrame {
 
             userDisplayPanel.removeAll();
             userDisplayPanel.add(UserDisplayTitle, BorderLayout.NORTH);
-            userDisplayPanel.add(DisplayJtable(users_data, columnNames_users, "Users"), BorderLayout.SOUTH);
-            userDisplayPanel.add(DisplayJtable(whitelist_data, columnNames_whitelist, "Whitelists mails"), BorderLayout.CENTER);
+            userDisplayPanel.add(DisplayJtable(users_data, columnNames_users), BorderLayout.SOUTH);
+            userDisplayPanel.add(DisplayJtable(whitelist_data, columnNames_whitelist), BorderLayout.CENTER);
             userDisplayPanel.revalidate();
-
-
-            //afficher la table whitelist
-            //userDisplayPanel.add(DisplayJtable(whitelist_data, columnNames_whitelist, "Employee WhiteList"));
-            
 
             userDisplayPanel.revalidate();
 
@@ -195,8 +197,14 @@ public class Form extends JFrame {
             Object[][] data = admin.get_format_stores_data(admin);
             String[] columnNames = {"ID", "Nom du magasin"};
 
+            //MAGASIN TITLE DISPLAY PANEL
+            JLabel MagasinDisplayTitle = new JLabel("Stores Table", JLabel.CENTER);
+            MagasinDisplayTitle.setFont(new Font("Arial", Font.BOLD, 20));
+            MagasinDisplayTitle.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+
             magasinDisplayPanel.removeAll();
-            magasinDisplayPanel.add(DisplayJtable(data, columnNames, "Stores"));
+            magasinDisplayPanel.add(MagasinDisplayTitle, BorderLayout.NORTH);
+            magasinDisplayPanel.add(DisplayJtable(data, columnNames));
             magasinDisplayPanel.revalidate();
 
         } catch (Exception ex) {

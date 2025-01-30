@@ -338,6 +338,22 @@ public class User {
         }
     }
 
+    public String get_store_name(Employee employee) {
+        String query = "SELECT store_name FROM Stores WHERE id =?";
+        try (PreparedStatement statement = dbmanager.getConnection().prepareStatement(query)) {
+            statement.setInt(1, employee.getStore_id());
+            try (ResultSet result = statement.executeQuery()) {
+                if (result.next()) {
+                    return result.getString("store_name");
+                } else {
+                    return "Magasin inexistant.";
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error while retrieving store name: " + e.getMessage());
+            return "Erreur lors de la récupération du nom du magasin.";
+        }
+    }
 
 
 }
