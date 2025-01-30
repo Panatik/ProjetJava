@@ -12,6 +12,7 @@ public class AdminDashboard extends Form {
         JFrame frame = new JFrame("Admin Panel - IStore");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setLocationRelativeTo(null);
 
         //main panel
@@ -28,11 +29,21 @@ public class AdminDashboard extends Form {
         titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
         TopPanel.add(titleLabel, BorderLayout.CENTER);
 
-        //boutton disconnect
-        JButton disconnect = new JButton("Disconnect");
-        disconnect.setPreferredSize(new Dimension(120, 30));
-        disconnect.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 15));
-        TopPanel.add(disconnect, BorderLayout.EAST);
+        //icon
+        //String str = "ressources/Skyrim-Logo.png";
+        //ImageIcon iconSkyrim = new ImageIcon(str);
+        //JLabel iconLabel = new JLabel(iconSkyrim);
+        //TopPanel.add(iconLabel, BorderLayout.EAST);
+
+        //menu bar
+        JMenuBar menu = new JMenuBar();
+        JMenu FirstButton = new JMenu("Account");
+        JMenuItem DisconnectItem = new JMenuItem("Disconnect");
+        JMenuItem ExitItem = new JMenuItem("Exit");
+        FirstButton.add(DisconnectItem);
+        FirstButton.add(ExitItem);
+        menu.add(FirstButton);
+        frame.setJMenuBar(menu);
 
         mainPanel.add(TopPanel, BorderLayout.NORTH);
 
@@ -86,12 +97,10 @@ public class AdminDashboard extends Form {
         DisplayMagasinPanelMethod(admin, magasinDisplayPanel, frame);
 
         //USER TITLE DISPLAY PANEL
-        JLabel UserDisplayTitle = new JLabel("Users Table", JLabel.CENTER);
+        JLabel UserDisplayTitle = new JLabel("Whitelist & Users Tables", JLabel.CENTER);
         UserDisplayTitle.setFont(new Font("Arial", Font.BOLD, 20));
         UserDisplayTitle.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
         userDisplayPanel.add(UserDisplayTitle, BorderLayout.NORTH);
-
-
         //MAGASIN TITLE DISPLAY PANEL
         JLabel MagasinDisplayTitle = new JLabel("Stores Table", JLabel.CENTER);
         MagasinDisplayTitle.setFont(new Font("Arial", Font.BOLD, 20));
@@ -121,9 +130,13 @@ public class AdminDashboard extends Form {
         frame.setVisible(true);
 
 
-        disconnect.addActionListener(e -> {
+        DisconnectItem.addActionListener(e -> {
             frame.dispose();
             LoginFrame Loginframe = new LoginFrame();
+        });
+
+        ExitItem.addActionListener(e -> {
+            frame.dispose();
         });
 
         AddwhitelistUserButton.addActionListener(e -> {

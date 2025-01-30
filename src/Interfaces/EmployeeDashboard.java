@@ -12,6 +12,7 @@ public class EmployeeDashboard extends Form {
         JFrame frame = new JFrame("Employee Panel - IStore");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setLocationRelativeTo(null);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -21,6 +22,16 @@ public class EmployeeDashboard extends Form {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
         mainPanel.add(titleLabel, BorderLayout.NORTH);
+
+        //menu bar
+        JMenuBar menu = new JMenuBar();
+        JMenu FirstButton = new JMenu("Account");
+        JMenuItem DisconnectItem = new JMenuItem("Disconnect");
+        JMenuItem ExitItem = new JMenuItem("Exit");
+        FirstButton.add(DisconnectItem);
+        FirstButton.add(ExitItem);
+        menu.add(FirstButton);
+        frame.setJMenuBar(menu);
 
         JPanel buttonPanel = new JPanel(new GridLayout(5, 2, 15, 15)); // Grid: 5 rows, 2 columns
         buttonPanel.setBackground(Color.WHITE);
@@ -44,6 +55,16 @@ public class EmployeeDashboard extends Form {
 
         frame.add(mainPanel);
         frame.setVisible(true);
+
+        DisconnectItem.addActionListener(e -> {
+            frame.dispose();
+            LoginFrame Loginframe = new LoginFrame();
+        });
+
+        ExitItem.addActionListener(e -> {
+            frame.dispose();
+        });
+
 
         updateUserButton.addActionListener(e -> {
             try {

@@ -163,8 +163,16 @@ public class Form extends JFrame {
             Object[][] whitelist_data = admin.get_format_employee_whitelist_data();
             String[] columnNames_whitelist = {"ID", "Email"};
 
+            //USER TITLE DISPLAY PANEL
+            JLabel UserDisplayTitle = new JLabel("Users & Whitelist Tables", JLabel.CENTER);
+            UserDisplayTitle.setFont(new Font("Arial", Font.BOLD, 20));
+            UserDisplayTitle.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+
             userDisplayPanel.removeAll();
-            userDisplayPanel.add(DisplayJtable(users_data, columnNames_users, "Users"));
+            userDisplayPanel.add(UserDisplayTitle, BorderLayout.NORTH);
+            userDisplayPanel.add(DisplayJtable(users_data, columnNames_users, "Users"), BorderLayout.SOUTH);
+            userDisplayPanel.add(DisplayJtable(whitelist_data, columnNames_whitelist, "Whitelists mails"), BorderLayout.CENTER);
+            userDisplayPanel.revalidate();
 
 
             //afficher la table whitelist
