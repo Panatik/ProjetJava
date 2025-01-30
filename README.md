@@ -16,6 +16,7 @@ Pour les intégrer dans votre projet :
 1. Ouvrez **Project Structure**
 2. Allez dans l'onglet **Libraries**
 3. Ajoutez les fichiers présents dans le dossier `.lib`
+(Il est fortement conseiller d'ajouter les librairies une par une dans IntelliJ)
 
 ## Lancement de l'application
 L'application propose deux interfaces :
